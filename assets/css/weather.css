@@ -1,0 +1,103 @@
+.weatherSelectorWrapper{
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+}
+.weatherSelector > h2{
+    text-align: center;
+    margin: 0;
+    padding: 20px 0;
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
+    background-color: var(--primary-color);
+}
+.weatherSelector{
+    display: grid;
+    justify-content: center;
+    width: fit-content;
+    background-color: black;
+    border-radius: 10px;
+    filter: drop-shadow(0 0 7px rgba(255, 255, 255, 0.3));
+}
+.weatherSelector > div{
+    padding: 10px 0 10px 0;
+}
+.weatherLatAndLon{
+    display: flex;
+    padding: 10px 10px !important;
+    align-items: flex-end;
+}
+.w_locationInputWrapper > label{
+    display: block;
+    text-align: center;
+}
+.w_locationInputWrapper > input{
+    margin: 2px 5px 2px 5px;
+    background-color: transparent;
+    border-style: solid;
+    border-color: var(--default-text-color);
+    color: var(--default-text-color);
+}
+.w_forecastInputWrapper{
+    text-align: center;
+    display: flex;
+    justify-content: center;
+}
+#w_forecastLimit{
+    line-height: 50px;
+    font-size: 30px;
+}
+.w_forecastInputWrapper > button{
+    background-color: transparent;
+    border-style: none;
+    color: var(--default-button-color);
+    padding: 0;
+    margin: 0px 20px 0px 20px;
+    cursor: pointer;
+
+    transition: color 0.4s ease;
+}
+.w_forecastInputWrapper > button > .w_buttonIcon{
+    height: auto;
+    font-size: 25px;
+}
+.w_forecastInputWrapper > button:hover{
+    color: var(--accent-color);
+}
+.w_forecastUpdateWrapper{
+    text-align: center;
+}
+#w_forecastUpdate{
+    background-color: var(--default-button-color);
+    color: var(--default-text-color);
+    cursor: pointer;
+    border-style: solid;
+    border-color: white;
+    font-size: 20px;
+    padding: 5px 20px;
+    box-shadow: 0 0 0 0 white;
+
+    transition: background-color 0.4s ease, box-shadow 0.4s ease;
+}
+#w_forecastUpdate:hover{
+    background-color: var(--accent-color);
+    box-shadow: 0 0 10px 2px white;
+}
+
+.currentLocationWrapper > #currentLocationButton{
+    background-color: var(--default-button-color);
+    color: var(--default-text-color);
+    cursor: pointer;
+    border-style: solid;
+    border-color: white;
+    font-size: 15px;
+    padding: 5px 10px;
+    margin: 0 10px;
+    box-shadow: 0 0 0 0 white;
+
+    transition: background-color 0.4s ease, box-shadow 0.4s ease;
+}
+.currentLocationWrapper > #currentLocationButton:hover{
+    background-color: var(--accent-color);
+    box-shadow: 0 0 10px 2px white;
+}

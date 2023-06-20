@@ -1,8 +1,18 @@
 @import url('http://localhost/scheduler/includes/packages/node_modules/@flaticon/flaticon-uicons/css/all/all.css');
+:root{
+    --primary-color: #4a3b63;
+    --secondary-color: #31293F;
+    --accent-color: #7e00b5;
+    --default-text-color: #D3D9E9;
+    --default-link-color: #796EA8;
+    --default-button-color: var(--default-link-color);
+    --default-bg-color: #1F1F1F;
+    --default-shadow-color: rgba(255, 255, 255, 0.3);
+}
 body{
-    background-color: #1F1F1F;
+    background-color: var(--default-bg-color);
     margin: 0;
-    color: #D3D9E9;
+    color: var(--default-text-color);
     font-family: Arial, Helvetica, sans-serif;
 }
 img{
@@ -11,11 +21,11 @@ img{
 }
 a{
     text-decoration: none;
-    color: #796EA8;
+    color: var(--default-link-color);
     transition: color 0.4s ease;
 }
 a:hover{
-    color: #7e00b5;
+    color: var(--accent-color);
 }
 header{
     display: flex;
@@ -29,6 +39,21 @@ nav ul{
     list-style-type: none;
     padding-inline-start: 0;
     text-align: center;
+
+    transform: translateY(-150px);
+    transition: transform 0.4s ease;
+}
+.navAnim{
+    transform: translateY(0);
+}
+nav .currentPageNavElem a{
+    color: #A6A9C8;
+}
+nav .currentPageNavElem a:hover{
+    color: var(--accent-color);
+}
+nav li{
+    margin: 10px 0 10px 0;
 }
 .menuContainer{
     display: flex;
@@ -37,12 +62,9 @@ nav ul{
 .menuContainer nav{
     flex: 1.5;
 }
-.menuContainer li{
-    margin: 10px 0 10px 0;
-}
 .menuButtonContainer .navButton{
     font-size: 50px;
-    color: #D3D9E9;
+    color: var(--default-text-color);
 
     cursor: pointer;
 
@@ -66,7 +88,8 @@ nav ul{
     flex: 1.5;
 }
 .weatherContainer li img{
-    width: 10%;
+    width: 40px;
+    margin-left: -7%;
 }
 .weatherContainer{
     display: flex;
@@ -84,13 +107,75 @@ nav ul{
 .weatherContainer li h4{
     margin: 10px 0 20px 0;
 }
-.fi{
-    color: white;
-    font-size: large;
+
+.weatherWidgets{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 30px;
+    row-gap: 30px;
+    margin: 30px 5px;
+    cursor: default;
+    align-items: center;
 }
-.fi-sr-sun{
-    color: yellow;
+.weatherWidget{
+    text-align: center;
+    filter: drop-shadow(0 0 10px var(--default-shadow-color));
 }
-.fi-sr-cloud-showers{
-    color: #00CCFF;
+.weatherIconContainer{
+    background-color: white;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+}
+.weatherIconContainer img{
+    height: 100px;
+    object-fit: contain;
+    padding: 20px 0 20px 0;
+}
+.weatherInfo{
+    display: flex;
+    align-items: stretch;
+}
+.weatherInfo > div{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.weatherInfo > .date, .weatherInfo > .conditionAndRegion{
+    background-color: black;
+}
+.conditionAndRegion > h4{
+    margin-block-start: 0;
+    margin-block-end: 0;
+    font-weight: 100;
+}
+.conditionAndRegion{
+    padding: 10px 0;
+}
+.temperature{
+    background-color: var(--primary-color);
+    font-size: 15px;
+    border-bottom-left-radius: 10px;
+}
+.conditionAndRegion > .condition{
+    font-size: 15px;
+}
+.conditionAndRegion > .region{
+    font-size: 15px;
+    font-weight: bolder;
+}
+.date{
+    font-size: 15px;
+    border-bottom-right-radius: 10px;
+}
+
+.temperature .minTemp, .temperature .maxTemp{
+    max-height: 0;
+    overflow-y: hidden;
+
+    transition: max-height 1s ease;
+}
+.weatherWidgetTempAnim{
+    max-height: 40px !important;
 }

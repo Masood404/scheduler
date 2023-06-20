@@ -4,7 +4,7 @@
 ?>
 <?php get_header();?>
 <body>
-    <main>
+    <main>      
         
     </main>
     <?php get_footer();?>

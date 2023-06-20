@@ -1,36 +1,11 @@
 <?php 
+    $config = require($_SERVER["DOCUMENT_ROOT"] . "/../.config/config.php");
     //scheduler project directory
     $schRoot = $_SERVER['DOCUMENT_ROOT'] . '/scheduler';
 
     $baseUrl = isset($_SERVER['HTTPS']) ? 'https://' : 'http://';
     $baseUrl .= $_SERVER['HTTP_HOST'] . '/scheduler';
 
-    //exception handle
-    set_exception_handler(function($exception){
-        global $baseUrl;
-        global $schRoot;
-
-        $schRootBckSlash = str_replace('/', '\\', $schRoot);
-
-        $message = str_replace($schRootBckSlash , '',$exception->__toString());
-
-        http_response_code(500);
-        header('Content-Type: text/html');
-        
-        ?>
-        <head>
-            <link rel="stylesheet" href="<?php echo $baseUrl . '/includes/css/' ?>/error.css">
-        </head>
-            <div class="exceptionError">
-                <?php echo $message; ?>
-            </div>
-            <div class="errorMessage">
-                <p>An error has happened in this site</p>
-                <a href="<?php echo get_current_url(); ?>">reload</a>
-            </div>
-        <?php
-    });
-    
     #region paths get and print functions
     function get_templates_directory(){
         global $schRoot;
@@ -139,7 +114,10 @@
             throw_header_file_error();
         }
     }
-    function get_header(){
+    $head_html_item;
+    function get_header($headHtmlItem = ''){
+        global $head_html_item;
+        $head_html_item = $headHtmlItem;
         if(file_exists(get_header_path())){
             include get_header_path();
             return get_header_path();
@@ -207,4 +185,24 @@
         throw new Exception('js directory does not exist:');  
     }
     #endregion
+
+    function get_default_head_items(){
+        $styleCss = get_css_direcrory_url() . '/style.css';
+        $jqueryJs = get_js_directory_url() . '/jquery.min.js';
+        $mainJs = get_js_directory_url() . '/main.js';
+
+        $html = <<<EOD
+            <link rel="stylesheet" href="$styleCss">
+            <link rel="stylesheet" href="/scheduler/includes/packages/node_modules/@flaticon/flaticon-uicons/css/all/all.css">
+    
+            <script src="$jqueryJs"></script>
+            <script src="$mainJs"></script>
+        EOD;
+
+        return $html;
+    }
+    function get_head_html_item(){
+        global $head_html_item;
+        return $head_html_item;
+    }
 ?>
