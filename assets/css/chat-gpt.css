@@ -98,6 +98,8 @@ main > .chatContainer{
     background-color: transparent;
 }
 .chatMessages{
+    display: flex;
+    flex-direction: column;
     flex: 1;
     overflow-y: auto;
     direction: rtl;
@@ -171,4 +173,20 @@ main > .chatContainer{
     border-style: solid;
     border-width: 1px 0;
     border-color: #545454;
+}
+.defaultMessageContainer{
+    text-align: center;
+    flex: 1;
+    padding: 5rem 2rem;
+}
+.defaultMessageContainer img{
+    height: 4rem;
+    filter: drop-shadow(0 0 1rem var(--default-link-color)) brightness(0) saturate(100%) invert(50%) sepia(73%) saturate(254%) hue-rotate(211deg) brightness(79%) contrast(88%);
+}
+.defaultMessageContainer h2{
+    color: var(--default-link-color);
+    text-shadow: 0 0 1rem var(--default-link-color);
+}
+.defaultMessageContainer p{
+    line-height: 2rem;
 }

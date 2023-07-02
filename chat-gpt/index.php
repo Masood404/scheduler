@@ -23,117 +23,21 @@ get_header($headItem);
                     <i class="fi fi-rr-messages h_chatIcon"></i>
                     <div class="h_chatTitle">Chat Title</div>
                 </div>
-                <div class="h_chatBlock">
-                    <i class="fi fi-rr-messages h_chatIcon"></i>
-                    <div class="h_chatTitle">Chat Title</div>
-                </div>
-                <div class="h_chatBlock">
-                    <i class="fi fi-rr-messages h_chatIcon"></i>
-                    <div class="h_chatTitle">Chat Title</div>
-                </div>
-                <div class="h_chatBlock">
-                    <i class="fi fi-rr-messages h_chatIcon"></i>
-                    <div class="h_chatTitle">Chat Title</div>
-                </div>
-                <div class="h_chatBlock">
-                    <i class="fi fi-rr-messages h_chatIcon"></i>
-                    <div class="h_chatTitle">Chat Title</div>
-                </div>
-                <div class="h_chatBlock">
-                    <i class="fi fi-rr-messages h_chatIcon"></i>
-                    <div class="h_chatTitle">Chat Title</div>
-                </div>
-                <div class="h_chatBlock">
-                    <i class="fi fi-rr-messages h_chatIcon"></i>
-                    <div class="h_chatTitle">Chat Title</div>
-                </div>
-                <div class="h_chatBlock">
-                    <i class="fi fi-rr-messages h_chatIcon"></i>
-                    <div class="h_chatTitle">Chat Title</div>
-                </div>
-                <div class="h_chatBlock">
-                    <i class="fi fi-rr-messages h_chatIcon"></i>
-                    <div class="h_chatTitle">Chat Title</div>
-                </div>
-                <div class="h_chatBlock">
-                    <i class="fi fi-rr-messages h_chatIcon"></i>
-                    <div class="h_chatTitle">Chat Title</div>
-                </div>
-                <div class="h_chatBlock">
-                    <i class="fi fi-rr-messages h_chatIcon"></i>
-                    <div class="h_chatTitle">Chat Title</div>
-                </div>
-                <div class="h_chatBlock">
-                    <i class="fi fi-rr-messages h_chatIcon"></i>
-                    <div class="h_chatTitle">Chat Title</div>
-                </div>
-                <div class="h_chatBlock">
-                    <i class="fi fi-rr-messages h_chatIcon"></i>
-                    <div class="h_chatTitle">Chat Title</div>
-                </div>
-                <div class="h_chatBlock">
-                    <i class="fi fi-rr-messages h_chatIcon"></i>
-                    <div class="h_chatTitle">Chat Title</div>
-                </div>
             </div>
         </div>
         <div class="chatContainer">
             <div class="chatMessages">
-                <div class="messageBlockWrapper">
-                    <div class="messageBlock">
-                        <div class="roleIconContainer">
-                            <img class="roleIcon" src="/scheduler/assets/images/User Icon.png">
-                        </div>
-                        <div class="cm_contentContainer">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-                        ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                        laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
-                        voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
-                        non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                        </div>
-                    </div>
-                </div>
-                <div class="messageBlockWrapper m_chatGpt_wrapper">
-                    <div class="messageBlock">
-                        <div class="roleIconContainer">
-                            <img class="roleIcon" src="/scheduler/assets/images/User Icon.png">
-                        </div>
-                        <div class="cm_contentContainer">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-                        ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                        laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
-                        voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
-                        non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                        </div>
-                    </div>
-                </div>
-                <div class="messageBlockWrapper">
-                    <div class="messageBlock">
-                        <div class="roleIconContainer">
-                            <img class="roleIcon" src="/scheduler/assets/images/User Icon.png">
-                        </div>
-                        <div class="cm_contentContainer">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-                        ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                        laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
-                        voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
-                        non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                        </div>
-                    </div>
-                </div>
-                <div class="messageBlockWrapper m_chatGpt_wrapper">
-                    <div class="messageBlock">
-                        <div class="roleIconContainer">
-                            <img class="roleIcon" src="/scheduler/assets/images/User Icon.png">
-                        </div>
-                        <div class="cm_contentContainer">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-                        ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                        laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
-                        voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
-                        non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                        </div>
-                    </div>
+                <div class="defaultMessageContainer">
+                    <img src="/scheduler/assets/images/transparent gpt icon.png">
+                    <h2>Chat Gpt Api</h2>
+                    <p>
+                        The GPT-3.5 API implemented in Scheduler is a language model developed by OpenAI. It allows users to interact with
+                        the scheduling application in a conversational manner. By understanding and generating human-like text, Scheduler's
+                        GPT-3.5 API enables users to schedule appointments, manage events, set reminders, and coordinate meetings using plain
+                        English input. The API's advanced natural language processing capabilities enhance the user experience, providing a
+                        more intuitive and user-friendly interface. Users can communicate with Scheduler as if they were talking to a human
+                        assistant, simplifying their scheduling tasks and saving time and effort.
+                    </p>
                 </div>
             </div>
             <div class="chatSendMessageWrapper">
