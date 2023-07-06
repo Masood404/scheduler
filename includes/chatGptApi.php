@@ -16,7 +16,12 @@
             $gptContents = array();
             $arrToSend = array(
                 "model" => "gpt-3.5-turbo",
-                "messages" => array()
+                "messages" => array(
+                    array(
+                        "role" => "system",
+                        "content" => "You are an AI assistant which will help users problems on any subject"
+                    )
+                ),
             );
 
             if(isset($gptInstances[$gptCurrentId])){

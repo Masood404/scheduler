@@ -1,11 +1,25 @@
 var $ = jQuery;
 
-let lattitudeSO = JSON.parse(localStorage.getItem("weatherApi")).lat || null;
-let longitudeSO = JSON.parse(localStorage.getItem("weatherApi")).lon || null;
+let lattitude;
+let longitude;
 
-let lattitude = (lattitudeSO != null || lattitudeSO != undefined) ? lattitudeSO : 33.56;
-let longitude = (longitudeSO != null || longitudeSO != undefined) ? longitudeSO : 73.01;  
+if(localStorage.getItem("weatherApi") != null){
+    lattitude = JSON.parse(localStorage.getItem("weatherApi")).lat;
+    longitude = JSON.parse(localStorage.getItem("weatherApi")).lon; 
+}
+else{
+    let coordinatesObj;
 
+    lattitude = 40.7128; // New york coordinates
+    longitude = -74.0060;
+
+    coordinatesObj = {
+        lat : lattitude,
+        lon : longitude
+    }
+
+    localStorage.setItem("weatherApi", JSON.stringify(coordinatesObj));
+} 
 let weatherapi = WeatherAPI(lattitude, longitude);
 
 $(document).ready(function () {

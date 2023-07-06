@@ -20,7 +20,7 @@ $(document).ready(function () {
             forecastLimitE.html(forecastLimit);   
         }
         else{
-            forecastLimit = weather.forecastLimit;
+            forecastLimit = weatherapi.forecastLimit;
             forecastLimitE.html(forecastLimit);   
         }
     }
@@ -131,6 +131,8 @@ $(document).ready(function () {
 
                 lattitudeInputE.val(geoLat);
                 longitudeInputE.val(geoLon);
+
+                isLocValueChanged = true;
             })
         }
         else{

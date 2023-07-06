@@ -196,6 +196,7 @@
             <link rel="stylesheet" href="/scheduler/includes/packages/node_modules/@flaticon/flaticon-uicons/css/all/all.css">
     
             <script src="$jqueryJs"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.4.0/showdown.min.js"></script>
             <script src="$mainJs"></script>
         EOD;
 

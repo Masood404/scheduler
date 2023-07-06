@@ -190,3 +190,27 @@ main > .chatContainer{
 .defaultMessageContainer p{
     line-height: 2rem;
 }
+.cm_contentContainer > pre{
+    white-space: normal;
+    background-color: black;
+    border-radius: 0.5rem;
+    filter: drop-shadow(0 0 6px black);
+}
+.cm_contentContainer > pre > code{
+    display: block;
+    padding: 1.2rem 1rem;
+    white-space: pre-wrap;
+}
+.cm_contentContainer > pre > div{
+    border-top-right-radius: inherit;
+    border-top-left-radius: inherit;
+    background-color: #343541;
+    padding: 0.2rem 1rem;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: small;
+    display: flex;
+    align-items: center;
+}
+.cm_contentContainer > pre > div > .m_codeLangName{
+    flex: 1;
+}

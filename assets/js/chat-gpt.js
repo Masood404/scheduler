@@ -98,7 +98,17 @@ function SwitchGptTo(id){
     gptCurrentInstance = gptInstances[id];
     gptCurrentId = id;
     $(".chatMessages").html("");
-    $(".chatMessages").html(gptCurrentInstance.getContentsH());     
+    $(".chatMessages").html(gptCurrentInstance.getContentsH());  
+    
+    let jsCodeTopH = /*html*/ `
+        <div>
+            <div class="m_codeLangName">javascript</div>
+            <div class="m_codeCopyContainer">
+                Copy Code
+            </div>        
+        </div>
+    `; 
+    $(".language-javascript").closest("pre").prepend(jsCodeTopH);
 }
 function Gpt_Convo(jsonFrom = {
     title : "New Chat",
@@ -186,7 +196,12 @@ function Gpt_Convo(jsonFrom = {
 
         function GenerateHtml(content, isChatContent = false){
             let html;
-            if(isChatContent){
+            let updatedContent = "";
+            let mdConverter =  new showdown.Converter();
+
+            updatedContent = mdConverter.makeHtml(content);
+
+            if(!isChatContent){
                 html = /*html*/`
                 <div class="messageBlockWrapper">
                     <div class="messageBlock">
@@ -208,7 +223,7 @@ function Gpt_Convo(jsonFrom = {
                             <img class="roleIcon" src="/scheduler/assets/images/Gpt Icon.png">
                         </div>
                         <div class="cm_contentContainer">
-                            ${content}
+                            ${updatedContent}
                         </div>
                     </div>
                 </div>
