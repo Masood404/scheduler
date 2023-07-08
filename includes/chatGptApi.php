@@ -61,6 +61,24 @@
                     "message" => $gptInstance["message"],
                     "response" => $response
                 ));
+                
+                $arrForTitle = array(
+                    "model" => "gpt-3.5-turbo",
+                    "messages" => array(
+                        array(
+                            "role" => "system",
+                            "content" => "You will give a title based on the content no longer than 18 letters"
+                        )
+                    )
+                );
+
+                array_push($arrForTitle["messages"], array(
+                    "role" => "user",
+                    "content" => $gptInstance["message"]
+                ));
+
+                $title = OpenAIAPI($arrForTitle, $apiKey)->choices[0]->message->content;
+                $gptInstance["title"] = $title;
             }
             $gptInstance["contents"] = $gptContents;
 
@@ -68,7 +86,11 @@
 
             file_put_contents("tempDB.json", json_encode($gptInstances, JSON_PRETTY_PRINT));
 
-            echo json_encode($gptInstance["contents"][sizeof($gptInstance["contents"]) - 1], JSON_PRETTY_PRINT);
+            $response = json_encode(array(
+                "content" => $gptInstance["contents"][sizeof($gptInstance["contents"]) - 1],
+                "title" => $gptInstance["title"]
+            ), JSON_PRETTY_PRINT);
+            echo $response;
         }
         else{
             header("HTTP/1.0 403 Forbidden");

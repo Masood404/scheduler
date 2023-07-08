@@ -48,7 +48,7 @@ get_header($headItem);
                     </button>
                 </div>
                 <div class="openAiAff">
-                    Powred by <a href="https://openai.com/">OpenAI</a>
+                    Powered by <a href="https://openai.com/">OpenAI</a>
                 </div>
             </div>
         </div>

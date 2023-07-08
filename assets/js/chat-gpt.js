@@ -182,7 +182,9 @@ function Gpt_Convo(jsonFrom = {
             },
             async : false,
             success: function (response) {
-                gptContent.response = JSON.parse(response).response;
+                gptContent.response = JSON.parse(response).content.response;
+                obj.setTitle(JSON.parse(response).title);
+                loadgptInstances();
             },
             error : function (){
                 console.log("could not retrive data for gpt response")
