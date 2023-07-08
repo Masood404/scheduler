@@ -35,7 +35,7 @@ get_header($headItem);
                         the scheduling application in a conversational manner. By understanding and generating human-like text, Scheduler's
                         GPT-3.5 API enables users to schedule appointments, manage events, set reminders, and coordinate meetings using plain
                         English input. The API's advanced natural language processing capabilities enhance the user experience, providing a
-                        more intuitive and user-friendly interface. Users can communicate with Scheduler as if they were talking to a human
+                        more intuitive and user-friendly interface. Users can communicate with Chat Gpt as if they were talking to a human
                         assistant, simplifying their scheduling tasks and saving time and effort.
                     </p>
                 </div>
@@ -46,6 +46,9 @@ get_header($headItem);
                     <button class="c_sendMessageElems" id="sendMessageButton">
                         <i class="fi fi-rs-paper-plane-top c_sendIcon"></i>
                     </button>
+                </div>
+                <div class="openAiAff">
+                    Powred by <a href="https://openai.com/">OpenAI</a>
                 </div>
             </div>
         </div>

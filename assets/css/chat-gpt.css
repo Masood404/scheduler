@@ -114,8 +114,10 @@ main > .chatContainer{
 .chatSendMessageWrapper{
     min-height: 15%;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    padding: 0.5rem 0;
 }
 .chatSendMessageContainer{
     display: flex;
@@ -124,6 +126,7 @@ main > .chatContainer{
     border-radius: 10px 10px;
     filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.6));
     align-items: flex-end;
+    margin: 0 0 1rem 0;
 }
 .c_sendMessageElems{
     display: block;
@@ -201,7 +204,7 @@ main > .chatContainer{
     padding: 1.2rem 1rem;
     white-space: pre-wrap;
 }
-.cm_contentContainer > pre > div{
+.cm_contentContainer > pre > .codeTop{
     border-top-right-radius: inherit;
     border-top-left-radius: inherit;
     background-color: #343541;
@@ -211,6 +214,25 @@ main > .chatContainer{
     display: flex;
     align-items: center;
 }
-.cm_contentContainer > pre > div > .m_codeLangName{
+.cm_contentContainer > pre > .codeTop > .m_codeLangName{
     flex: 1;
+}
+.cm_contentContainer > pre > .codeTop > .m_codeCopyContainer{
+    display: flex;
+    align-items: center;
+    column-gap: 0.3rem;
+    cursor: pointer;
+}
+.cm_contentContainer > pre > .codeTop > .m_codeCopyContainer > .m_copyCodeIcon{
+    font-size: larger;
+}
+.cm_contentContainer .c_highlightKeyword{ 
+    color: #4e8cff;
+}
+.cm_contentContainer .c_highlightFunction{
+    color: red;
+}
+.cm_contentContainer > p{
+    margin-block-start: 0;
+    margin-block-end: 1.5em;
 }

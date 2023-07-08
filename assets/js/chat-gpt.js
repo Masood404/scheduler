@@ -99,16 +99,53 @@ function SwitchGptTo(id){
     gptCurrentId = id;
     $(".chatMessages").html("");
     $(".chatMessages").html(gptCurrentInstance.getContentsH());  
+
+    const responseCodingE = $(".m_chatGpt_wrapper .cm_contentContainer pre code");
     
-    let jsCodeTopH = /*html*/ `
-        <div>
-            <div class="m_codeLangName">javascript</div>
-            <div class="m_codeCopyContainer">
-                Copy Code
-            </div>        
-        </div>
-    `; 
-    $(".language-javascript").closest("pre").prepend(jsCodeTopH);
+    responseCodingE.each(function(i, obj){
+        const classes =  $(obj).attr("class");
+        let langName = ""; 
+
+        for(let i = 0; i < classes.length; i++){
+            if(classes[i] == " "){
+                break;
+            }
+            else{
+                langName += classes[i];
+            }
+        }
+
+        const codeTopH = /*html*/`
+            <div class="codeTop">
+                <div class="m_codeLangName">${langName}</div>
+                <div class="m_codeCopyContainer">
+                    <i class="fi fi-rs-clipboard m_copyCodeIcon"></i>
+                    <span>Copy code</span>
+                </div>
+            </div>
+        `;
+
+        $(obj).closest("pre").prepend(codeTopH);
+    });
+    responseCodingE.closest("pre").find(".codeTop .m_codeCopyContainer").click(function(){
+        const currentE = this;
+        const copyText = $(currentE).closest(".codeTop").closest("pre").find("code").html();
+        const eDefaultText = $(currentE).find("span").html();
+
+        navigator.clipboard.writeText(copyText);
+
+        $(currentE).find(".m_copyCodeIcon").removeClass("fi-rs-clipboard");
+        $(currentE).find(".m_copyCodeIcon").addClass("fi-bs-check");
+
+        $(currentE).find("span").html("Copied");
+
+        setTimeout(function(){
+            $(currentE).find(".m_copyCodeIcon").removeClass("fi-bs-check");
+            $(currentE).find(".m_copyCodeIcon").addClass("fi-rs-clipboard");
+
+            $(currentE).find("span").html(eDefaultText);
+        }, 1500)
+    });
 }
 function Gpt_Convo(jsonFrom = {
     title : "New Chat",
