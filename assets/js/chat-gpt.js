@@ -2,10 +2,13 @@ let apiResponse = []
 
 $.ajax({
     type: "GET",
-    url: "/scheduler/includes/tempDB.json",
+    url: "/scheduler/includes/chatGptApi.php",
+    data: {
+        feature: "getGpt"
+    },
     async : false,
     success: function (response) {
-        apiResponse = response;
+        apiResponse = JSON.parse(response);
     },
     error: function(){
         console.log("could not retrive gpt instances from db");
@@ -26,11 +29,13 @@ let loadgptInstances = () => {
     }
 }
 
+let defaultMessageTemplate = "";
+
 for(let i = 0; i < apiResponse.length; i++){
     gptInstances[i] = Gpt_Convo(apiResponse[i]);
 }
 
-let defaultMessageTemplate = "";
+console.log(apiResponse.length);
 
 let isNewChatAllowed = true;
 
@@ -182,7 +187,7 @@ function Gpt_Convo(jsonFrom = {
             },
             async : false,
             success: function (response) {
-                gptContent.response = JSON.parse(response).content.response;
+                gptContent.response = JSON.parse(response).response;
                 obj.setTitle(JSON.parse(response).title);
                 loadgptInstances();
             },
