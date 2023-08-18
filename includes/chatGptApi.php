@@ -23,7 +23,7 @@
 
                 $query = "SELECT * FROM gptcontents
                 WHERE id = $id;";
-                $gptcontents = $conn->query($query)->fetch_all();
+                $gptcontents = $conn->query($query)->fetch_all(MYSQLI_ASSOC);
 
                 return $gptcontents;
             }
@@ -35,9 +35,21 @@
                 global $response;
 
                 $query = "INSERT INTO gptcontents (id, message, response)
-                VALUES ($id, '$message', '$response');";
+                VALUES (?, ?, ?);";
 
-                $conn->query($query);
+                $stmt = $conn->prepare($query);
+
+                if($stmt){
+                    //Bind parameters to the statment
+                    $stmt->bind_param("iss", $id, $message, $response);
+
+                    if(!$stmt->execute()){
+                        echo "Insert failed: ". $stmt->error;
+                    }
+                }
+                else{
+                    echo "Preperation failed: ".$conn->error;
+                }
             }
 
             $gptInstance =  $_POST["gptInstance"];
@@ -47,16 +59,85 @@
             $title = $gptInstance["title"];
             $response = "static response";
 
+            $arrToSend = array(
+                "model" => "gpt-3.5-turbo",
+                "messages" => array(
+                    array(
+                        "role" => "system",
+                        "content" => "You are an AI assistant which will help users problems on any subject. To display a more readable format to the user, your answer must be formatted in Markdown."
+                    )
+                )
+            );
+
             if(isset(getGptInstances()[$id])){
                 //add a new content record
+                $gptContent = getGptContent();
+                for($i = 0; $i < count($gptContent); $i++){
+                    array_push(
+                        $arrToSend["messages"],
+                        array(
+                            "role" => "user",
+                            "content" => $gptContent[$i]["message"]
+                        )
+                    );
+                    array_push(
+                        $arrToSend["messages"],
+                        array(
+                            "role" => "assistant",
+                            "content" => $gptContent[$i]["response"]
+                        )
+                    );
+                }
+
+                array_push(
+                    $arrToSend["messages"],
+                    array(
+                        "role" => "user",
+                        "content" => $message
+                    )
+
+                );
+
+                $result = OpenAIAPI($arrToSend, $apiKey);
+                $response = $result->choices[0]->message->content;
+                
                 addGptContent();
             }
             else{
+                //Generate a title based on the first message with open ai
+                $arrForTitle = array(
+                    "model" => "gpt-3.5-turbo",
+                    "messages" => array(
+                        array(
+                            "role" => "system",
+                            "content" => "you give a title name based on context while the max title limit being 15 letters."
+                        ),
+                        array(
+                            "role" => "user",
+                            "content" => $message
+                        )
+                    )
+                );
+
+                $updatedTitle = OpenAIAPI($arrForTitle, $apiKey)->choices[0]->message->content;
+                $title = $updatedTitle;
+
                 //add a new gptinstance with a content record
                 $gptInsertQuery = "INSERT INTO gptinstances (id, currentmessage, title)
                 VALUE ($id, '$message', '$title');"; //adds a new gpt instance to the db
 
                 $conn->query($gptInsertQuery);
+
+                array_push(
+                    $arrToSend["messages"],
+                    array(
+                        "role" => "user",
+                        "content" => $message
+                    )
+
+                );
+                $result = OpenAIAPI($arrToSend, $apiKey);
+                $response = $result->choices[0]->message->content;
 
                 addGptContent();
             }

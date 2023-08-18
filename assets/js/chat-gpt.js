@@ -93,7 +93,6 @@ function SendMessage(message){
     }
     if(message.length > 5){
         gptCurrentInstance.newContent(message);
-        SwitchGptTo(gptCurrentId);
     }
     else{
         alert("Invalid Input")
@@ -151,6 +150,10 @@ function SwitchGptTo(id){
             $(currentE).find("span").html(eDefaultText);
         }, 1500)
     });
+
+    //Scroll behaviour
+    const scrollHeight = $(".chatMessages").height();
+    console.log(scrollHeight);
 }
 function Gpt_Convo(jsonFrom = {
     title : "New Chat",
@@ -173,6 +176,14 @@ function Gpt_Convo(jsonFrom = {
             message : message
         };
 
+        //Loading started
+        let loaderH = GenerateHtml(message, false) + GenerateHtml(`<div class="custom-loader"></div>`, true);
+
+        if(obj.contents.length < 1){
+            $(".chatMessages").html("");
+        }
+        $(".chatMessages").append(loaderH);
+
         $.ajax({
             type: "POST",
             url: "/scheduler/includes/chatGptApi.php",
@@ -185,14 +196,15 @@ function Gpt_Convo(jsonFrom = {
                     title : obj.title
                 }
             },
-            async : false,
             success: function (response) {
                 gptContent.response = JSON.parse(response).response;
                 obj.setTitle(JSON.parse(response).title);
                 loadgptInstances();
+                //Loading finished
+                SwitchGptTo(gptCurrentId);
             },
             error : function (){
-                console.log("could not retrive data for gpt response")
+                console.log("could not retrive data for gpt response");
             }
         });
         obj.contents.push(gptContent);
@@ -237,43 +249,42 @@ function Gpt_Convo(jsonFrom = {
             messageH = defaultMessageTemplate;
         }
         return messageH;
+    }
+    function GenerateHtml(content, isChatContent = false){
+        let html;
+        let updatedContent = "";
+        let mdConverter =  new showdown.Converter();
 
-        function GenerateHtml(content, isChatContent = false){
-            let html;
-            let updatedContent = "";
-            let mdConverter =  new showdown.Converter();
+        updatedContent = mdConverter.makeHtml(content);
 
-            updatedContent = mdConverter.makeHtml(content);
-
-            if(!isChatContent){
-                html = /*html*/`
-                <div class="messageBlockWrapper">
-                    <div class="messageBlock">
-                        <div class="roleIconContainer">
-                            <img class="roleIcon" src="/scheduler/assets/images/User Icon.png">
-                        </div>
-                        <div class="cm_contentContainer">
-                            ${content}
-                        </div>
+        if(!isChatContent){
+            html = /*html*/`
+            <div class="messageBlockWrapper">
+                <div class="messageBlock">
+                    <div class="roleIconContainer">
+                        <img class="roleIcon" src="/scheduler/assets/images/User Icon.png">
+                    </div>
+                    <div class="cm_contentContainer">
+                        ${content}
                     </div>
                 </div>
-            `;
-            }
-            else{
-                html = /*html*/`
-                <div class="messageBlockWrapper m_chatGpt_wrapper">
-                    <div class="messageBlock">
-                        <div class="roleIconContainer">
-                            <img class="roleIcon" src="/scheduler/assets/images/Gpt Icon.png">
-                        </div>
-                        <div class="cm_contentContainer">
-                            ${updatedContent}
-                        </div>
-                    </div>
-                </div>
-            `;
-            }
-            return html;
+            </div>
+        `;
         }
+        else{
+            html = /*html*/`
+            <div class="messageBlockWrapper m_chatGpt_wrapper">
+                <div class="messageBlock">
+                    <div class="roleIconContainer">
+                        <img class="roleIcon" src="/scheduler/assets/images/Gpt Icon.png">
+                    </div>
+                    <div class="cm_contentContainer">
+                        ${updatedContent}
+                    </div>
+                </div>
+            </div>
+        `;
+        }
+        return html;
     }
 }
