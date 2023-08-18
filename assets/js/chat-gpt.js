@@ -83,6 +83,13 @@ $(document).ready(function () {
     });
     $(".chatHistory").on("click", ".h_chatBlock",function () {
         SwitchGptTo($(this).attr("data-gptId"));
+
+        //Scroll behaviour
+        const scrollHeight = $(".chatMessages")[0].scrollHeight;
+        $(".chatMessages").animate({
+            scrollTop : scrollHeight
+        }, 800);
+
     });
     
     console.log(gptInstances);
@@ -150,10 +157,6 @@ function SwitchGptTo(id){
             $(currentE).find("span").html(eDefaultText);
         }, 1500)
     });
-
-    //Scroll behaviour
-    const scrollHeight = $(".chatMessages").height();
-    console.log(scrollHeight);
 }
 function Gpt_Convo(jsonFrom = {
     title : "New Chat",
