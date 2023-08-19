@@ -29,14 +29,13 @@ get_header($headItem);
             <div class="chatMessages">
                 <div class="defaultMessageContainer">
                     <img src="/scheduler/assets/images/transparent gpt icon.png">
-                    <h2>Chat Gpt Api</h2>
+                    <h2>Chat Gpt</h2>
                     <p>
-                        The GPT-3.5 API implemented in Scheduler is a language model developed by OpenAI. It allows users to interact with
-                        the scheduling application in a conversational manner. By understanding and generating human-like text, Scheduler's
-                        GPT-3.5 API enables users to schedule appointments, manage events, set reminders, and coordinate meetings using plain
-                        English input. The API's advanced natural language processing capabilities enhance the user experience, providing a
-                        more intuitive and user-friendly interface. Users can communicate with Chat Gpt as if they were talking to a human
-                        assistant, simplifying their scheduling tasks and saving time and effort.
+                        Chatbot GPT, or Generative Pre-trained Transformer, is a sophisticated AI model developed by OpenAI.
+                        It is designed to assist users with various tasks and provide helpful responses in conversational style.
+                        GPT utilizes transformers, a type of neural network architecture, to understand and generate human-like
+                        text based on the input received. With its vast pre-training on a wide range of data, GPT has the ability
+                        to generate coherent and contextually relevant answers to users' queries on any subject.
                     </p>
                 </div>
             </div>

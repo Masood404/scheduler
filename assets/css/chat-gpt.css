@@ -78,7 +78,23 @@ main > .chatContainer{
     display: block;
 }
 .h_chatBlock > .h_chatTitle{
-    flex: 1;
+    width: 15em;
+    overflow-x: hidden;
+    position: relative;
+}
+.h_chatBlock > .h_chatTitle:after{
+    content:"";
+    width:20%;
+    position:absolute;
+    right:0;
+    top:0;
+    height:100%;
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0), var(--default-bg-color))
+}
+.h_chatBlock .deleteIcon{
+    opacity: 0;
+
+    transition: opacity 0.4s ease;
 }
 
 ::-webkit-scrollbar{
@@ -251,4 +267,4 @@ main > .chatContainer{
   
   @keyframes s3{ 
     100%{transform: rotate(1turn)}
-  }
+}

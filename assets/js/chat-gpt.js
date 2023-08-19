@@ -81,7 +81,10 @@ $(document).ready(function () {
             isNewChatAllowed = false;
         }
     });
-    $(".chatHistory").on("click", ".h_chatBlock",function () {
+
+    /*Chat History Blocks events */
+
+    function chatBlockClickHandler(){
         SwitchGptTo($(this).attr("data-gptId"));
 
         //Scroll behaviour
@@ -89,8 +92,32 @@ $(document).ready(function () {
         $(".chatMessages").animate({
             scrollTop : scrollHeight
         }, 800);
+    }
 
+    $(".chatHistory").on("click", ".h_chatBlock", chatBlockClickHandler);
+    $(".chatHistory").on("click", ".deleteIcon", function(e){
+        e.stopPropagation();
+
+        const requestPayload = `?gptDelete=${gptCurrentInstance.id}`;
+
+        $.ajax({
+            type: "DELETE",
+            url: `/scheduler/includes/chatGptApi.php${requestPayload}`,
+            async: false,
+            success: function (response) {
+                location.reload();
+            }
+        });
+    })
+
+    $(".chatHistory").on("mouseenter", ".h_chatBlock", function() {
+        $(this).find(".deleteIcon").css("opacity", "0.8");
+    }).on("mouseleave", ".h_chatBlock", function() {
+        $(this).find(".deleteIcon").css("opacity", "0"); // Reset the color on mouse leave
     });
+
+    /* */
+    
     
     console.log(gptInstances);
 });
@@ -233,6 +260,9 @@ function Gpt_Convo(jsonFrom = {
             <div class="h_chatBlock" data-gptId = "${obj.id}">
                 <i class="fi fi-rr-messages h_chatIcon"></i>
                 <div class="h_chatTitle">${obj.title}</div>
+                <div class="h_chatDelete" data-gptId = "${obj.id}">
+                    <i class="fi fi-rr-trash deleteIcon"></i>
+                </div>
             </div>
         `;  
 

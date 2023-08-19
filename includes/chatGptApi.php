@@ -192,6 +192,21 @@
         }
 
     }
+    else if($_SERVER["REQUEST_METHOD"] === 'DELETE'){
+        $isGptDeleteRequestSet = isset($_GET['gptDelete']);
+
+        if($isGptDeleteRequestSet){
+            $gptId = $_GET['gptDelete'];
+
+            $instanceDeleteQuery = "DELETE FROM gptinstances
+            WHERE id = $gptId;";
+            $contentDeleteQuery = "DELETE FROM gptcontents
+            WHERE id = $gptId;";
+
+            $conn->query($instanceDeleteQuery);
+            $conn->query($contentDeleteQuery);
+        }
+    }
     $conn->close();
 
     //Returns all the gptInstances in the db
