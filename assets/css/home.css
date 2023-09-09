@@ -1,0 +1,89 @@
+main{
+    display: flex;
+    height: 100%;
+    gap: 0.5rem;
+}
+main > aside{
+    width: 20em;
+    padding: 1em 0.5em;
+    background-color: #202123;
+}
+main > .hours{
+    flex: 1;
+}
+.create-task{
+    padding: 1em 1.2em 1em 1.2em;
+    border-radius: 2em;
+    display: flex;
+    align-items: center;
+    gap: 1em;
+    font-size: 1em;
+    cursor: pointer;
+    background-color: transparent;
+    color: var(--default-text-color);
+    border-style: solid;
+    border-width: 2px;
+    border-color: rgb(80, 80, 80);
+    transition: background-color 0.2s ease;
+}
+.create-task:hover{
+    background-color: rgba(255, 255, 255, 0.05);
+}
+.create-task-icon{
+    font-size: 1.5em;
+}
+
+.calendar{
+    margin-top: 2em;
+}
+.calendar-top{
+    text-align: center;
+    font-size: 1.4em;
+    margin: 1.5em 0;
+    display: flex;
+    justify-content: center;
+}
+#calendar-month{
+    margin: 0 1em;
+    flex: 0.75;
+}
+.calendar-month-changer{
+    cursor: pointer;
+    vertical-align: middle;
+}
+.calendar > ul{
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    padding-inline-start: 0;
+}
+.calendar > ul > li{
+    position: relative;
+    width: calc(100% / 7);
+    text-align: center;
+}
+.calendar-days > li{
+    margin: 0.5em 0;
+    cursor: pointer;
+    z-index: 1;
+}
+.calendar-days > li::before{
+    position: absolute;
+    content: "";
+    height: 2em;
+    width: 2em;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+    border-radius: 50%;
+}
+.calendar-days > li:hover::before{
+    background-color: rgba(255, 255, 255, 0.1)
+}   
+.inactive-days{
+    opacity: 0.5;
+}
+#calendar-current-day::before{
+    background-color: var(--default-link-color);
+}

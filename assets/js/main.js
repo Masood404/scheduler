@@ -23,30 +23,38 @@ else{
 let weatherapi = WeatherAPI(lattitude, longitude);
 
 $(document).ready(function () {
-    //inject weather api to header
-    let todayWeatherE = $("header .todayWeather");
-    let tommorowWeatherE = $("header .tommorowWeather");
-    let afterTommorowE = $("header .afterTommorowWeather");
+    if(weatherapi){
+        //inject weather api to header
+        let todayWeatherE = $("header .todayWeather");
+        let tommorowWeatherE = $("header .tommorowWeather");
+        let afterTommorowE = $("header .afterTommorowWeather");
 
-    todayWeatherE.html(`
-        <img src = "${weatherapi.today.condition.icon}">
-        <h4>${weatherapi.today.dayName}</h4>
-        <p><b>Min:</b> ${weatherapi.today.minTemp} C&deg;</p>
-        <p><b>Current:</b> ${weatherapi.currentTemp} C&deg;</p>
-        <p><b>Max:</b> ${weatherapi.today.maxTemp} C&deg;</p>
-    `);
-    tommorowWeatherE.html(`
-        <img src = "${weatherapi.tommorow.condition.icon}">
-        <h4>${weatherapi.tommorow.dayName}</h4>
-        <p><b>Min:</b> ${weatherapi.tommorow.minTemp} C&deg;</p>
-        <p><b>Max:</b> ${weatherapi.today.maxTemp} C&deg;</p>
-    `)
-    afterTommorowE.html(`
-        <img src = "${weatherapi.afterTommorow.condition.icon}">
-        <h4>${weatherapi.afterTommorow.dayName}</h4>
-        <p><b>Min:</b> ${weatherapi.afterTommorow.minTemp} C&deg;</p>
-        <p><b>Max:</b> ${weatherapi.afterTommorow.maxTemp} C&deg;</p>
-    `)
+        todayWeatherE.html(`
+            <img src = "${weatherapi.today.condition.icon}">
+            <h4>${weatherapi.today.dayName}</h4>
+            <p><b>Min:</b> ${weatherapi.today.minTemp} C&deg;</p>
+            <p><b>Current:</b> ${weatherapi.currentTemp} C&deg;</p>
+            <p><b>Max:</b> ${weatherapi.today.maxTemp} C&deg;</p>
+        `);
+        tommorowWeatherE.html(`
+            <img src = "${weatherapi.tommorow.condition.icon}">
+            <h4>${weatherapi.tommorow.dayName}</h4>
+            <p><b>Min:</b> ${weatherapi.tommorow.minTemp} C&deg;</p>
+            <p><b>Max:</b> ${weatherapi.today.maxTemp} C&deg;</p>
+        `)
+        afterTommorowE.html(`
+            <img src = "${weatherapi.afterTommorow.condition.icon}">
+            <h4>${weatherapi.afterTommorow.dayName}</h4>
+            <p><b>Min:</b> ${weatherapi.afterTommorow.minTemp} C&deg;</p>
+            <p><b>Max:</b> ${weatherapi.afterTommorow.maxTemp} C&deg;</p>
+        `)
+    }
+    else{
+        //Show weather api's error to the header
+        let weatherContainer = $(".weatherContainer");
+
+        weatherContainer.html("unable to load weather data")
+    }
 
     //menu animation based on navButton click
     let navUl = $("nav ul");

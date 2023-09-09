@@ -12,11 +12,15 @@
             $url = "http://api.weatherapi.com/v1/forecast.json?key=$apiKey&q=$lattitude,$longitude&days=3";
             $response = file_get_contents($url);
 
-            echo $response;
+            if(!isset($response["error"])){
+                echo $response;
+            }
+            else{
+                header("HTTP/1.0 403 Forbidden");
+            }
         }
         else{
             header("HTTP/1.0 403 Forbidden");
-            echo '0';
         }
     }
 ?>
