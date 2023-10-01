@@ -14,12 +14,6 @@
 <body>
     <main>      
         <aside>
-            <div class="create-task-wrapper">
-                <button class="create-task">
-                    <i class="fi fi-bs-plus create-task-icon"></i>
-                    Create Task
-                </button>
-            </div>
             <div class="calendar-wrapper">
                 <div class="calendar">
                     <div class="calendar-top">
@@ -39,46 +33,34 @@
                         <li>Sat</li>
                     </ul>
                     <ul class="calendar-days">
-                        <li class="calendar-inactive-days">1</li>
-                        <li>2</li>
-                        <li>3</li>
-                        <li>4</li>
-                        <li>5</li>
-                        <li>6</li>
-                        <li>7</li>
-                        <li>8</li>
-                        <li>9</li>
-                        <li>10</li>
-                        <li>11</li>
-                        <li>12</li>
-                        <li>13</li>
-                        <li>14</li>
-                        <li>15</li>
-                        <li>16</li>
-                        <li>17</li>
-                        <li>18</li>
-                        <li>19</li>
-                        <li>20</li>
-                        <li>21</li>
-                        <li>22</li>
-                        <li>23</li>
-                        <li>24</li>
-                        <li>25</li>
-                        <li>26</li>
-                        <li>27</li>
-                        <li>28</li>
-                        <li>29</li>
-                        <li>30</li>
-                        <li id="calendar-current-day">31</li>
+                        <!--Render calendar-->
                     </ul>
                 </div>
             </div>
-            <div class="task-history-wrapper">
-
+            <div class="create-task-wrapper">
+                <button id="create-task">
+                    <i class="fi fi-bs-plus create-task-icon"></i>
+                    Create Task
+                </button>
+                <label for="task-title">Task Title</label><br>
+                <input type="text" id="task-title">
+                <div class="task-dates">
+                    <div class="selected-date-wrapper">
+                        <label for="selected-date-input">Start Date</label><br>
+                        <input type="text" id="selected-date-input">
+                    </div>
+                    <div class="next-selected-date-wrapper">
+                        <label for="next-date-input">End Date</label><br>
+                        <input type="text" id="next-date-input">
+                    </div>
+                </div>
             </div>
+            <!-- <div class="task-history-wrapper">
+
+            </div> -->
         </aside>
         <div class="hours">
-            someText
+            <!--Render hours -->
         </div>
     </main>
     <?php get_footer();?>

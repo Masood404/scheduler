@@ -11,7 +11,7 @@ main > aside{
 main > .hours{
     flex: 1;
 }
-.create-task{
+#create-task{
     padding: 1em 1.2em 1em 1.2em;
     border-radius: 2em;
     display: flex;
@@ -26,10 +26,10 @@ main > .hours{
     border-color: rgb(80, 80, 80);
     transition: background-color 0.2s ease;
 }
-.create-task:hover{
+#create-task:hover{
     background-color: rgba(255, 255, 255, 0.05);
 }
-.create-task-icon{
+#create-task-icon{
     font-size: 1.5em;
 }
 
@@ -77,13 +77,99 @@ main > .hours{
     transform: translate(-50%, -50%);
     z-index: -1;
     border-radius: 50%;
+    
+    transition: background-color 0.3s ease;
 }
 .calendar-days > li:hover::before{
     background-color: rgba(255, 255, 255, 0.1)
 }   
-.inactive-days{
+.calendar-days > .inactive-days{
     opacity: 0.5;
 }
-#calendar-current-day::before{
+#calendar-selected-day::before{
     background-color: var(--default-link-color);
+}
+.hours{
+    overflow-y: auto;
+    direction: rtl;
+    scrollbar-gutter: stable;
+    padding: 1em 0 1em 1em;
+    position: relative;
+}
+.hours::-webkit-scrollbar-track{
+    background-color: transparent;
+}
+.hours *{
+    direction: ltr;
+}
+.hour{
+    font-size: 12px;
+    display: flex;
+}
+.hour > span{
+    display: block;
+    width: 45px;
+}
+.hour > div{
+    padding-top: 6px;
+    flex: 1;
+    border-style: inset;
+    border-width: 0 0 0 2px;
+    margin-inline-start: 5px;
+}
+.hour > div > .hour-quarters-wrapper > hr{
+    margin: 0;
+    background: none;
+    border-style: solid;
+    border-width: 2px 0 0 0;
+    border-color: white;
+    padding: 5px 0;
+}
+.hour > div > .hour-quarters-wrapper > .hour-quarters{
+    border-color: rgba(255, 255, 255, 0.5);
+    border-top-width: 1px;
+    transform: none;
+}
+.hour > div > .hour-wrapper{
+    transform-origin: right;
+    transform: scaleX(1.01);
+    position: relative;
+}
+.hour > div > .hour-quarters-wrapper{
+    position: relative;
+}
+.hour > div > .hour-quarters-wrapper > .fi-ss-circle{
+    position: absolute;
+    top: -3px;
+    left: -8px;
+    font-size: 10px;
+    color: #A6A9C8;
+}
+.hour > div > #selectedTime > hr{
+    border-top-color: #A6A9C8;
+    border-top-width: 4px;
+}
+.hours > #hours-task-box{
+    background-color: #A6A9C8;
+    position: absolute;
+    width: 80%;
+    box-shadow: 0 3px 10px 2px var(--default-shadow-color);
+    border-radius: 10px;
+    padding-inline-start: 0.5em;
+}
+main > aside > div{
+    border-bottom: 1px solid transparent;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-image: linear-gradient(90deg, transparent, rgba(255, 255,255, 0.5), transparent) 1;
+}
+.task-dates{
+    display: flex;
+}
+.task-dates > div{
+    flex: 1;
+}
+.create-task-wrapper  [type="text"]{
+    background-color: transparent;
+    border-style: none;
 }
