@@ -13,55 +13,35 @@
  ?>
 <body>
     <main>      
-        <aside>
-            <div class="calendar-wrapper">
-                <div class="calendar">
-                    <div class="calendar-top">
-                        <i class="fi fi-rr-angle-small-left calendar-month-changer" id="month-prev"></i>
-                        <div id="calendar-month">
-                            August 2023
-                        </div>
-                        <i class="fi fi-rr-angle-small-right calendar-month-changer" id="month-next"></i>
-                    </div>
-                    <ul class="calendar-week-days">
-                        <li>Sun</li>
-                        <li>Mon</li>
-                        <li>Tue</li>
-                        <li>Wed</li>
-                        <li>Thu</li>
-                        <li>Fri</li>
-                        <li>Sat</li>
-                    </ul>
-                    <ul class="calendar-days">
-                        <!--Render calendar-->
-                    </ul>
-                </div>
-            </div>
-            <div class="create-task-wrapper">
-                <button id="create-task">
-                    <i class="fi fi-bs-plus create-task-icon"></i>
-                    Create Task
-                </button>
-                <label for="task-title">Task Title</label><br>
-                <input type="text" id="task-title">
-                <div class="task-dates">
-                    <div class="selected-date-wrapper">
-                        <label for="selected-date-input">Start Date</label><br>
-                        <input type="text" id="selected-date-input">
-                    </div>
-                    <div class="next-selected-date-wrapper">
-                        <label for="next-date-input">End Date</label><br>
-                        <input type="text" id="next-date-input">
-                    </div>
-                </div>
-            </div>
-            <!-- <div class="task-history-wrapper">
+        <label>Start Date</label>
+        <br>
+        <input type="number" id="start-hour">
+        <input type="number" id="start-minute">
+        <br>
+        <label>End Date</label><br>
+        <input type="number" id="end-hour">
+        <input type="number" id="end-minute">
+        <br>
+        <br>
+        <label for="cron-expression">Cron Expression</label>
+        <br>
+        <input type="text" id="cron-expression">
+        <br>
+        <br>
+        <input type="button" id="create-task" value="Create Task">
+        <input type="button" id="fetch-tasks" value="Fetch Tasks">
+        <br>
+        <br>
+        <label for="task-id">Task Id</label>
+        <br>
+        <input type="number" id="task-id">
+        <br>
+        <br>
+        <input type="button" id="complete-task" value="Complete">
+        <input type="button" id="delete-task" value="Delete">
+        <input type="button" id="subscribe-endpoint" value="subscribe">
+        <br>
 
-            </div> -->
-        </aside>
-        <div class="hours">
-            <!--Render hours -->
-        </div>
     </main>
     <?php get_footer();?>
  </body>

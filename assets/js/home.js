@@ -1,264 +1,316 @@
-var $ = jQuery;
-
-$(document).ready(function () {
-
-    const currentDate = $("#calendar-month"),
-        daysTag = $(".calendar-days"),
-        prevNextIcon = $(".calendar-month-changer"),
-        daysTags = $(".calendar-days li"),
-        todayDate = new Date();
-
-    let date = new Date(),
-        currYear = date.getFullYear(),
-        currMonth = date.getMonth(),
-        selectedDate = date;
-
-    let isNextSelectionAcitve = false;
-    let isNextActive = false;
-    let nextSelectedDate;
-
-    const roundedHourMinute = (dateToRound) => {
-        let hours = dateToRound.getHours();
-        let minutes = dateToRound.getMinutes();
-
-        let roundedMinute = (Math.round(minutes / 15) * 15) % 60;
-        let roundedHour = minutes > 52 ? (hours === 23 ? 0 : ++hours) : hours;
-
-        return {
-            roundedMinute : roundedMinute,
-            roundedHour : roundedHour
-        };
+//#region Utillities
+/**
+ * Manipulates a date object by performing various operations such as addition, subtraction, multiplication, or division.
+ *
+ * @param {Date} baseDate - The base date object to manipulate.
+ * @param {number} value - The numeric value by which to modify the base date. The actual effect depends on the chosen time unit and operation.
+ * @param {string} unit - The time unit for the operation. Accepts values like "minute", "hour" and "day". (optional) 
+ * @param {string} op - The type of operation to perform. Accepts values like "add," "subtract," "multiply," or "divide." (optional)
+ *
+ * @returns {Date} A new date object representing the result of applying the specified operation to the base date using the provided value and time unit.
+ * @example
+ * const now = new Date();
+ * console.log(manipulateDate(now, 15, "minute", "add")); //now Date + 15 minutes
+ */
+function manipulateDate(baseDate, value, unit = "minute", op = "add") {
+    const switchOperation = (unitEvaluated) => {
+        switch (op) {
+            case "add":
+                return new Date(baseDate.getTime() + unitEvaluated);
+            case "subtract":
+                return new Date(baseDate.getTime() - unitEvaluated);
+            case "multiply":
+                return new Date(baseDate.getTime() * unitEvaluated);
+            case "divide":
+                return new Date(baseDate.getTime() / unitEvaluated);
+            default:
+                return new Date(baseDate.getTime() + unitEvaluated);
+        }
     };
 
-    const months = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December"
-    ];
-
-    const renderCalender = () => {
-        let firstDayOfMonth = new Date(currYear, currMonth, 1).getDay();
-        let lastDateOfMonth = new Date(currYear, currMonth + 1, 0).getDate(); // getting last date of month. Passing 0 for the date argument will return the last date of the month.
-        let lastDateOfPrevMonth = new Date(currYear, currMonth, 0).getDate();
-        let liTag = "";
-
-        let isMonthActive = true;
-
-        if (currYear < todayDate.getFullYear()) {
-            isMonthActive = false;
-        }
-        else if (currMonth < todayDate.getMonth() && currYear == todayDate.getFullYear()) {
-            isMonthActive = false;
-        }
-        else {
-            isMonthActive = true;
-        }
-
-        for (let i = firstDayOfMonth; i > 0; i--) {
-            liTag += `<li class="inactive-days">${lastDateOfPrevMonth - i + 1}</li>`;
-        }
-
-        for (let i = 1; i <= lastDateOfMonth; i++) {
-            let isDayActive = currMonth == todayDate.getMonth() && currYear == todayDate.getFullYear() ? i >= todayDate.getDate() : true //Sorry :(;
-
-            if (i == selectedDate.getDate() && isDayActive && isMonthActive) {
-                liTag += `<li id="calendar-selected-day">${i}</li>`;
-            }
-            else if (!isMonthActive || !isDayActive) {
-                liTag += `<li class="inactive-days">${i}</li>`;
-            }
-            else {
-                liTag += `<li>${i}</li>`;
-            }
-        }
-
-        currentDate.html(`${months[currMonth]} ${currYear}`);
-        daysTag.html(liTag);
-        selectedDate.setMonth(currMonth);
+    switch (unit) {
+        case "minute":
+        case "min":
+        case "m":
+            return switchOperation(value * 60 * 1000);
+        case "hour":
+        case "h":
+            return switchOperation(value * 60 * 60 * 1000);
+        case "day":
+        case "d":
+            return switchOperation(value * 24 * 60 * 60 * 1000);
+        default:
+            return switchOperation(value * 60 * 1000);
     }
-    renderCalender();
+}
 
-    const renderHours = (isTaskBoxEnabled = false) => {
-        const generateHourHtml = (hour, isPm = false) => {
-            const selectedTimeIdAttr = (min) => {
-                let selectedTimeIdAttr = '';
+/**
+ * Rounds a date object to the nearest specified time interval.
+ *
+ * @param {Date} date - The date object to be rounded.
+ * @param {number} interval - The time interval (in minutes) to round the date to.
+ *
+ * @returns {Date} A new date object representing the rounded date.
+ * @example
+ * const now = new Date();
+ * const roundedInterval = roundDateToInterval(now, 15);
+ * console.log(roundedInterval); // Output will be the date rounded to the nearest 15-minute interval.
+ */
+function roundDateToInterval(date, interval) {
+    const minutes = date.getMinutes();
+    const roundedMinutes = Math.round(minutes / interval) * interval;
+    date.setMinutes(roundedMinutes);
+    date.setSeconds(0);
+    date.setMilliseconds(0);
 
-                if (hour == roundedHourMinute(selectedDate).roundedHour && min == roundedHourMinute(selectedDate).roundedMinute) {
-                    selectedTimeIdAttr += 'id="selectedTime"';
+    return date;
+}
+//#endregion
+const TasksManger = {
+    //All the instances of the tasks cached in this property
+    tasks: [],
+
+    /**
+     * The task id will be initalized by the server
+     * 
+     * @param {String} title - Title of the task.
+     * @param {Date | number} startTime - Start time of the task.
+     * @param {Date |number} endTime - End time of the task.
+     * @param {Function} callback - The function to run on success. can pass in a parameter in this that will store the created task.
+     */
+    createTask(title, startTime, endTime, callback = () => null, errorCallback = () => null) {
+        //If the type of the time arguments is Date convert them to unix millisecond.
+        const p_startTime = startTime instanceof Date ? startTime.getTime() : startTime;
+        const p_endTime = startTime instanceof Date ? endTime.getTime() : endTime;
+
+        //The regex pattern for a valid interval string.
+        //const validregex = new RegExp("^(c[01]{7}$)|^([dn]{1}$)", "gi");
+
+        let p_task = {}; //Object to store the returned task object with a id number.
+        //Http request
+        $.ajax({
+            type: "POST",
+            url: "http://localhost/scheduler/includes/homeApi.php",
+            data: {
+                task: {
+                    title: title,
+                    startTime: p_startTime,
+                    endTime: p_endTime,
                 }
-                else {
-                    selectedTimeIdAttr = '';
-                }
-                if (isNextActive && hour == roundedHourMinute(nextSelectedDate).roundedHour && min == roundedHourMinute(nextSelectedDate).roundedMinute) {
-                    selectedTimeIdAttr += ' id="nextSelectedTime"';
-                }
-                return selectedTimeIdAttr;
-            };
+            },
+            success: function (response) {
+                p_task = JSON.parse(response); //Store the task object
+                callback(p_task);
+            },
+            error: errorCallback
+        });
+    },
+    /**
+     * @param {Function} callback - The function to run on success. can pass in a parameter in this that will store the returned result.
+     * @param {number | null} id - The requested id of the task, negative or no value will return all the task instances. (optional)
+     * @param {Function} errorCallback - The function to run on error of any network error or server error. (optional)
+     */
+    fetchTask(callback, id = null, errorCallback = () => null) {
+        let p_task;
+        if (id < 0 || id == null) {
+            //Fetch all
+            $.ajax({
+                type: "GET",
+                url: "http://localhost/scheduler/includes/homeApi.php",
+                success: function (response) {
+                    p_task = JSON.parse(response);
+                    TasksManger.tasks = p_task;
 
-            return /*html*/ `
-            <div class="hour">
-                <span>${hour > 12 ? hour - 12 : hour} ${isPm ? "PM" : "AM"}</span>
-                <div>
-                    <div ${selectedTimeIdAttr(0)} class="hour-wrapper hour-quarters-wrapper">
-                        <hr data-minute="0" data-hour="${hour}">
-                    </div>
-                    <div ${selectedTimeIdAttr(15)} class="hour-quarters-wrapper">
-                        <hr class="hour-quarters" data-minute="15" data-hour="${hour}">
-                    </div>
-                    <div ${selectedTimeIdAttr(30)} class="hour-quarters-wrapper">
-                        <hr class="hour-quarters" data-minute="30" data-hour="${hour}">
-                    </div>
-                    <div ${selectedTimeIdAttr(45)} class="hour-quarters-wrapper">
-                        <hr class="hour-quarters" data-minute="45" data-hour="${hour}">
-                    </div>
-                </div>
-            </div>
-            `;
-
-            //circle icon: <i class="fi fi-ss-circle">
-        }
-
-        let hours = "";
-
-        for (let i = 0; i < 24; i++) {
-            if (i < 12) {
-                hours += generateHourHtml(i, false);
-            }
-            else {
-                hours += generateHourHtml(i, true);
-            }
-        }
-
-        //Render
-        $(".hours").html(hours);
-        $("#selectedTime").prepend('<i class="fi fi-ss-circle">');
-
-        if (isTaskBoxEnabled) {
-            const topPosition = $("#selectedTime").position().top + parseFloat($(".hour-quarters-wrapper hr").css("border-top-width").replace("px",''));
-            const leftPosition = $(".hour div").position().left;
-            const bottomPosition = $("#nextSelectedTime").position().top;
-            const hoursScrollTop = $(".hours").scrollTop()
-
-            const selectedDateHour = selectedDate.getHours();
-            const selectedDateMinute = selectedDate.getMinutes();
-            const nextSelectedDateHour = nextSelectedDate.getHours();
-            const nextSelectedDateMinute = nextSelectedDate.getMinutes();
-
-            let taskBox = /*html*/
-            `<div id="hours-task-box">
-                (Untitled)
-                ${
-                    (selectedDateHour > 12 ? selectedDateHour - 12 : selectedDateHour) + ":" +
-                    (selectedDateMinute.toString().length < 2 ? "0" + selectedDateMinute : selectedDateMinute) + " " +
-                    (selectedDateHour > 12 ? "PM" : "AM")
-                } - 
-                ${
-                    (nextSelectedDateHour > 12 ? nextSelectedDateHour - 12 : nextSelectedDateHour) + ":" +
-                    (nextSelectedDateMinute.toString().length < 2 ? "0" + nextSelectedDateMinute : nextSelectedDateMinute) + " " +
-                    (nextSelectedDateHour > 12 ? "PM" : "AM")
-                }
-                </div>`;
-            let fontSize = Math.round((bottomPosition - topPosition) * 0.8)
-
-            if(fontSize > 20){
-                fontSize = 20;
-            }
-
-            $(".hours").append(taskBox);
-            $("#hours-task-box").css({
-                "top": topPosition + hoursScrollTop,
-                "left": leftPosition,
-                "height": bottomPosition - topPosition,
-                "font-size": fontSize
+                    callback(p_task);
+                },
+                error: errorCallback
             });
         }
-
-    }
-    renderHours();
-
-    $(".calendar-month-changer").on("click", function () {
-        currMonth = $(this).attr("id") === "month-prev" ? currMonth - 1 : currMonth + 1;
-
-
-        if (currMonth < 0 || currMonth > 11) {
-            date = new Date(currYear, currMonth);
-            currYear = date.getFullYear();
-            currMonth = date.getMonth();
-        }
-        renderCalender();
-    });
-
-    $(".calendar-days").on("click", "li", function () {
-        if ($(this).attr("class") != "inactive-days") {
-            selectedDate = new Date(currYear, currMonth, $(this).html());
-            renderCalender();
-        }
-    });
-
-    $(".hours").on("click", ".hour div hr", function () {
-        const limitDate = new Date();
-
-        let hourTime = parseInt($(this).attr("data-hour"));
-        let minuteTime = parseInt($(this).attr("data-minute"));
-        let thisDate = () => {
-            let thisDate = new Date(currYear, currMonth, selectedDate.getDate(), 0, 0);
-
-            thisDate.setHours(hourTime);
-            thisDate.setMinutes(minuteTime);
-            thisDate.setSeconds(0);
-
-            return thisDate;
-        }
-        if (isNextSelectionAcitve) {
-            isNextSelectionAcitve = false;
-            isNextActive = true;
-            nextSelectedDate = new Date();
-            if (thisDate().getTime() <= limitDate.getTime() || thisDate().getTime() <= selectedDate.getTime()) {
-                nextSelectedDate.setHours(selectedDate.getHours() + 1);
-                nextSelectedDate.setMinutes(0);
-                nextSelectedDate.setSeconds(0);
-            }
-            else {
-                nextSelectedDate = thisDate();
-            }
-        }
         else {
-            isNextActive = false;
-            if (thisDate().getTime() <= limitDate.getTime()) {
-                selectedDate = limitDate;
-            }
-            else {
-                selectedDate = thisDate();
-            }
+            //Fetch Single Instance
+            $.ajax({
+                type: "GET",
+                url: "http://localhost/scheduler/includes/homeApi.php",
+                data: { taskId: id },
+                success: function (response) {
+                    p_task = JSON.parse(response);
+                    callback(p_task);
+                },
+                error: errorCallback
+            });
         }
-        renderHours(isNextActive);
-    })
-
-    $("#create-task").on("click", function () {
-        isNextSelectionAcitve = true;
-        $(".hours .hour div hr").css({
-            "cursor": "pointer"
+    },
+    /**
+     * Marks the completed status of the task's instance.
+     * @param {number} id - The id of the requested task's instance.
+     * @param {boolean | int} status - The completed status. (optional)
+     * @param {Function} callback - The function to call on success of the http request, can pass in a parameter to get a response. (optional)
+     * @param {Function} errorCallback - The function to call on error of the http request. (optional)
+     */
+    completedStatus(id, status = true, callback = () => null, errorCallback = () => null) {
+        $.ajax({
+            type: "PUT",
+            url: "http://localhost/scheduler/includes/homeApi.php",
+            data: {
+                completedStatus: status ? 1 : 0,
+                taskId: id
+            },
+            success: (response) => {
+                callback(response);
+            },
+            error: errorCallback
         });
-        for(let i = 0, quarters = $("[data-hour]"); i < quarters.length; i++){
-            const hourTime = $(quarters[i]).attr("data-hour");
-            const minuteTime = $(quarters[i]).attr("data-minute");
-            const thisDate = new Date(currYear, currMonth, selectedDate.getDate(), hourTime, minuteTime);
+    },
 
-            if(thisDate.getTime() < selectedDate.getTime()){
-                $(quarters[i - 1]).css({
-                    "opacity":0.4
-                });
+    /**
+     * 
+     * @param {number} id - The id of the requested task's instance.
+     * @param {Function} callback - The function to call on success of the http request, can pass in a parameter to get a response. (optional)
+     * @param {Function} errorCallback - The function to call on error of the http request. (optional)
+     */
+    deleteTask(id, callback = () => null, errorCallback = () => null) {
+        $.ajax({
+            type: "DELETE",
+            url: "http://localhost/scheduler/includes/homeApi.php",
+            data: {
+                taskId: id
+            },
+            success: function (response) {
+                callback(response);
+            },
+            error: errorCallback
+        });
+    },
+}
+const NotifManager = {
+    /** 
+     * Register Service worker
+     * @param {string} serviceWorkerUrl - The URL path to the file of the service worker
+     */
+    registerSw(serviceWorkerUrl) {
+        navigator.serviceWorker.register(serviceWorkerUrl);
+    },
+    /**
+     * Request permission to subscribe for notification
+     */
+    requestSubscribe(callback = () => null, errorCallback = () => null) {
+        //Request notification permission 
+        Notification.requestPermission().then((permission) => {
+            //On permission granted
+            if (permission === "granted") {
+                //Get service wroker
+                navigator.serviceWorker.ready.then((sw) => {
+                    this.requestPublicVapid((publicVapidKey) => {
+                        sw.pushManager.subscribe({
+                            userVisibleOnly: true,
+                            applicationServerKey: publicVapidKey
+                        }).then((subscription) => {
+                            $.ajax({
+                                type: "POST",
+                                url: "http://localhost/scheduler/includes/homeApi.php",
+                                data: {
+                                    "subscription": subscription.toJSON()
+                                },
+                                success: (response) => {
+                                    callback(response)
+                                },
+                                error: errorCallback
+                            });
+                        })
+                    })
+                })
             }
-        }
-    });
+            //On permission not granted
+            else {
+                alert("Permission not granted to subscribe");
+            }
+        })
+    },
+    /**
+     * Request the public VAPID keys from the backend
+     * @param {Function} callback - The function to run on request sucess
+     * @param {Function} errorCallback - The function to run on request error
+     */
+    requestPublicVapid(callback, errorCallback = () => null) {
+        $.ajax({
+            type: "GET",
+            url: "http://localhost/scheduler/includes/homeApi.php",
+            data: {
+                feature: "getVapid"
+            },
+            success: (publicVapidKey) => {
+                callback(publicVapidKey);
+            },
+            error: errorCallback
+        });
+    }
+}
 
+NotifManager.registerSw("service-worker.js");
+
+$(document).ready(function () {
+    let startDate = new Date(); //Now
+    let endDate = roundDateToInterval(manipulateDate(startDate, 15), 15); //Now + 15 rounded minutes to the intervals of 15.
+
+    const $startHour = $("#start-hour");
+    const $startMinute = $("#start-minute");
+    const $endhour = $("#end-hour");
+    const $endMinute = $("#end-minute");
+    const $taskId = $("#task-id");
+
+    const $createTask = $("#create-task");
+    const $fetchTasks = $("#fetch-tasks");
+    const $completeTask = $("#complete-task");
+    const $deleteTask = $("#delete-task");
+    const $subscribe = $("#subscribe-endpoint");
+
+    $startHour.val(startDate.getHours());
+    $startMinute.val(startDate.getMinutes());
+    $endhour.val(endDate.getHours());
+    $endMinute.val(endDate.getMinutes());
+
+    $createTask.click(() => {
+        startDate.setHours($startHour.val());
+        startDate.setMinutes($startMinute.val());
+        endDate.setHours($endhour.val());
+        endDate.setMinutes($endMinute.val());
+
+        console.log(startDate);
+
+        TasksManger.createTask("Untitled", startDate, endDate, function (instance) {
+
+        });
+    });
+    $fetchTasks.click(() => renderTasks());
+    $completeTask.click(() => TasksManger.completedStatus($taskId.val(), true,
+        (response) => {
+            console.log(response);
+        }, () => {
+            console.log("error");
+        })
+    )
+    $deleteTask.click(() => TasksManger.deleteTask($taskId.val(), () => {
+        console.log("success");
+    }, () => {
+        console.log("error");
+    }));
+    $subscribe.click(() => NotifManager.requestSubscribe());
+
+    //const cronExp = new RegExp(/^(\*|([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])|\*\/([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])) (\*|([0-9]|1[0-9]|2[0-3])|\*\/([0-9]|1[0-9]|2[0-3])) (\*|([1-9]|1[0-9]|2[0-9]|3[0-1])|\*\/([1-9]|1[0-9]|2[0-9]|3[0-1])) (\*|([1-9]|1[0-2])|\*\/([1-9]|1[0-2])) (\*|([0-6])|\*\/([0-6]))$/);
+
+    //#region Render Modules
+    function renderTasks() {
+        //Activate Loader
+
+
+        TasksManger.fetchTask(function (a_tasks) {
+            //Deactivate Loader and render
+
+
+        }, null, function () {
+            //Deactivate Loader and show error
+
+        })
+    }
+    //#endregion 
 });

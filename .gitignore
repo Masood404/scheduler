@@ -1,2 +1,1 @@
-.env
-includes/tempPsuedoApi.php
+includes/endpoint.json

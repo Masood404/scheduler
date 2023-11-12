@@ -1,10 +1,19 @@
 <?php 
-    $config = require($_SERVER["DOCUMENT_ROOT"] . "/../.config/config.php");
+    $config = require("c:/xampp/.config/config.php");
     //scheduler project directory
     $schRoot = $_SERVER['DOCUMENT_ROOT'] . '/scheduler';
 
     $baseUrl = isset($_SERVER['HTTPS']) ? 'https://' : 'http://';
-    $baseUrl .= $_SERVER['HTTP_HOST'] . '/scheduler';
+    $baseUrl .= isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] . '/scheduler' : "";
+
+    //database connection
+
+    $hostname = "localhost";
+    $database = "scheduler";
+    $username = "root";
+    $password = "";
+
+    $conn = new mysqli($hostname, $username, $password, $database);
 
     #region paths get and print functions
     function get_templates_directory(){
@@ -205,5 +214,84 @@
     function get_head_html_item(){
         global $head_html_item;
         return $head_html_item;
+    }
+
+    /**
+     * @param int $id - The id of the requested instance, negative or no value will return all the instances.
+     */
+    function getTask($id = null){
+        global $conn;
+        if($id < 0 || $id == null){
+            //Get all task instances Query
+            $getQ = "SELECT * FROM tasks;";
+            
+            $tasks = $conn->query($getQ)->fetch_all(MYSQLI_ASSOC);
+            return $tasks;
+        }
+        else{
+            //Get task instance Query 
+            $getQ = "SELECT * FROM tasks
+            WHERE id = $id;";
+
+            $taskArr = $conn->query($getQ)->fetch_assoc(); //Store the query result in an assoc arrayS
+            return $taskArr;
+        }
+    }
+
+    /**
+     * @param array $taskToCheck - The task to check if it overlaps any other task instance.
+     */
+    function hasDateOverlap(array $taskToCheck){
+        $tasks = getTask();
+
+        foreach($tasks as $task){
+            if(
+                //Overlapping Conditions
+                ($taskToCheck["startTime"] >= $task["startTime"] && $taskToCheck["startTime"] <= $task["endTime"]) ||
+                ($taskToCheck["endTime"] >= $task["startTime"] && $taskToCheck["endTime"] <= $task["endTime"]) ||
+                ($taskToCheck["startTime"] < $task["startTime"] && $taskToCheck["endTime"] > $task["endTime"])
+            ){
+                return true;
+            }
+        }
+        return false;
+    }
+    /**
+     * The nearest next task from the current time
+     */
+    function getNextTask(){
+        global $conn;
+
+        $currentTime = new DateTime("now");
+        $currentTimeStamp = $currentTime->getTimestamp();
+
+        $getQ = "SELECT * FROM tasks
+        WHERE startTime > $currentTimeStamp AND completed = 0
+        ORDER BY ABS(startTime - $currentTimeStamp)
+        LIMIT 1;";
+
+        $nextTask = $conn->query($getQ)->fetch_assoc();
+
+        return $nextTask;
+
+    }
+    /**
+     * Delete a task record from the database
+     * @param int $taskId
+     */
+    function deleteTask($taskId){
+        global $conn;
+    
+        //Task id does not exist or out of bounds
+        if($taskId > count(getTask()) || $taskId < 0){
+            return false;
+        }
+        else{
+            $deleteQ = "DELETE FROM tasks
+            WHERE id = $taskId;";
+
+            $conn->query($deleteQ);
+            return true;
+        }
     }
 ?>
