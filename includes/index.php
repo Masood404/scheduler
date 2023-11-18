@@ -196,16 +196,19 @@
     #endregion
 
     function get_default_head_items(){
+        global $baseUrl;
+
         $styleCss = get_css_direcrory_url() . '/style.css';
         $jqueryJs = get_js_directory_url() . '/jquery.min.js';
         $mainJs = get_js_directory_url() . '/main.js';
+        $showdown = $baseUrl . "/includes/packages/node_modules/showdown/dist/showdown.min.js";
 
         $html = <<<EOD
             <link rel="stylesheet" href="$styleCss">
             <link rel="stylesheet" href="/scheduler/includes/packages/node_modules/@flaticon/flaticon-uicons/css/all/all.css">
     
             <script src="$jqueryJs"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.4.0/showdown.min.js"></script>
+            <script src="$showdown"></script>
             <script src="$mainJs"></script>
         EOD;
 
