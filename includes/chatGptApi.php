@@ -1,8 +1,8 @@
 <?php
-    require_once __DIR__ . "/index.php";
+    require_once __DIR__ . DIRECTORY_SEPARATOR ."index.php";
     //header('Content-Type: application/json; charset=utf-8');
     
-    $apiKey = $config["Open_Ai_Key"];
+    $apiKey = MY_CONFIG["Open_Ai_Key"];
     
     $hostname = "localhost";
     $database = "scheduler";

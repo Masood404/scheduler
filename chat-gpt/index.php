@@ -1,11 +1,16 @@
 <?php
     //Dependecies
-    require_once $_SERVER['DOCUMENT_ROOT'] . '/scheduler/includes/index.php';
+    require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "includes" . DIRECTORY_SEPARATOR . "index.php"
 ?>
 <?php 
+$css = path_to_url(__CSS__) . "/chat-gpt.css";
+$js = path_to_url(__JS__) . "/chat-gpt.js";
+
 $headItem = <<<EOD
-    <link rel="stylesheet" href="/scheduler/assets/css/chat-gpt.css">
-    <script src="/scheduler/assets/js/chat-gpt.js"></script>
+    <link rel="stylesheet" href="$css">
+    <script src="$js"></script>
+
+    <title>Chat GPT</title>
 EOD;
 get_header($headItem);
 ?>

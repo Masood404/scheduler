@@ -1,7 +1,7 @@
 <?php
-    require_once __DIR__ . "\/index.php";
+    require_once __DIR__ . DIRECTORY_SEPARATOR . "index.php";
     
-    //$apiKey = $config["Open_Ai_Key"];
+    //$apiKey = MY_CONFIG["Open_Ai_Key"];
     
     /**
      * A task is array/object/instance/record stored in the db. When recieving properties of this from http requests,
@@ -20,8 +20,7 @@
                  * Echo's VAPID public key.
                  */
                 "getVapid" => function () {
-                    global $config;
-                    echo $config["Public_VAPID"];
+                    echo MY_CONFIG["Public_VAPID"];
                 }
             );
             if(isset($features[$_GET["feature"]])){

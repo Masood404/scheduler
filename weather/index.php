@@ -1,12 +1,17 @@
 <?php
     //Dependecies
-    require_once $_SERVER['DOCUMENT_ROOT'] . '/scheduler/includes/index.php';
+    require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "includes" . DIRECTORY_SEPARATOR . "index.php";
 ?>
 <html>
 <?php 
+$css = path_to_url(__CSS__) . "/weather.css";
+$js = path_to_url(__JS__) . "/weather.js";
+
 $headItem = <<<EOD
-    <link rel="stylesheet" href="/scheduler/assets/css/weather.css">
-    <script src="/scheduler/assets/js/weather.js"></script>
+    <link rel="stylesheet" href="$css">
+    <script src="$js"></script>
+
+    <title>Weather</title>
 EOD;
 get_header($headItem);
 ?>

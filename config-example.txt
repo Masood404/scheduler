@@ -1,0 +1,35 @@
+<?php
+    /*
+        This file contains all the enviormental variables which contains sensitive keys or other data used for the 
+        scheduler application, none of these credentials should be shared or somehow revealed to the frontend, all the keys
+        such as api keys, vapid keys, ssl keys, etc. are different to everyone who wants to host this app are different.
+
+        Without configuring this file. the scheduler app will not run!
+
+        Please take the time to change some of these variables, you will run into errors if you have not configured
+        this file yet after trying to run the scheduler web app, probably it could be a configurations problem and please
+        check the most updated README file on https://github.com/Masood404/scheduler,
+        if you still run into problems please feel free to contact anyone whose contact details is in the README.
+
+        Thank you.
+    */
+
+    $private_key = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . "private_key.pem");
+    $public_key = file_get_contents(__DIR__ . DIRECTORY_SEPARATOR . "public_key.pem");
+
+    return[
+        /*
+        * Http host and Database host most properly are the same but in some cases it might be different.
+        */
+        "DB_Host" => "localhost",
+        "DB_User" => "root",
+        "DB_Password" => "",
+
+        "Open_Ai_Key" => "{OpenAIApiKey}",
+        "Weather_Key" => "{WeatherKey}",
+        "Public_VAPID" => "{Public_VAPID}",
+        "Private_VAPID" => "{Private_VAPID}",
+        "Private_Key" => $private_key,
+        "Public_Key" => $public_key
+    ];
+?>

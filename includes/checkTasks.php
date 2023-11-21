@@ -7,8 +7,8 @@
         https://docs.oracle.com/cd/E12058_01/doc/doc.1014/e12030/cron_expressions.htm
     */
 
-    require_once __DIR__ . "/index.php";
-    require_once __DIR__ . "/packages/vendor/autoload.php";
+    require_once __DIR__ . DIRECTORY_SEPARATOR ."index.php";
+    require_once __VENDOR__ . DIR_S . "autoload.php";
 
     use Minishlink\WebPush\WebPush;
     use Minishlink\WebPush\Subscription;
@@ -45,8 +45,8 @@
             $auth = [
                 "VAPID" => [
                     "subject" => "mailto:me@website.com",
-                    "publicKey" => $config["Public_VAPID"],
-                    "privateKey" => $config["Private_VAPID"],
+                    "publicKey" => MY_CONFIG["Public_VAPID"],
+                    "privateKey" => MY_CONFIG["Private_VAPID"],
                 ]
             ];
             $webPush = new WebPush($auth);

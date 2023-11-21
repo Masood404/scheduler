@@ -6,7 +6,8 @@
      * Private_VAPID => "$YOUR_PRIVATE_VAPID.
      * Remember to replace your VAPID keys to the actual generated keys from this file.
      */
-    require_once "packages\/vendor\/autoload.php";
+    require_once __DIR__ . DIRECTORY_SEPARATOR . "constants.php";
+    require_once __VENDOR__ . DIR_S . "autoload.php";
 
     use Minishlink\WebPush\VAPID;
 

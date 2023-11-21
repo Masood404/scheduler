@@ -1,7 +1,17 @@
 <?php
-    function navElem($url, $text){
-        $currentPageURL = $_SERVER['REQUEST_URI'];
-        if($url == $currentPageURL){
+    /**
+     * @param string $url
+     * @param string $text
+     * @param string $title
+     */
+    function navElem($url, $text, $title = null){
+        preg_match("/<title>(.*)<\/title>/siU", get_head_html_item(), $title_matches);
+
+        if($title === null){
+            $title = $text;
+        }
+
+        if(isset($title_matches[1]) && $title == $title_matches[1]){
             echo <<<EOD
                 <li class = "currentPageNavElem"><a href="$url">$text</a></li>
             EOD;
@@ -40,9 +50,9 @@
         <nav>
         <ul>
             <?php
-            navElem('/scheduler/', 'Home');
-            navElem('/scheduler/chat-gpt/', 'Chat GPT');
-            navElem('/scheduler/weather/', 'Weather'); 
+            navElem(__PROJECT_URL__, 'Home');
+            navElem(__PROJECT_URL__ . "/chat-gpt", 'Chat GPT');
+            navElem(__PROJECT_URL__ . "/weather", 'Weather'); 
             ?>
         </ul>
         </nav>

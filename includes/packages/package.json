@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@flaticon/flaticon-uicons": "^2.2.0",
+    "jsencrypt": "^3.3.2",
     "showdown": "^2.1.0"
   }
 }
