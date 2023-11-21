@@ -1,6 +1,6 @@
 <?php
     //Dependecies
-    require_once __DIR__ . '/includes/index.php';
+    require_once __DIR__ . DIRECTORY_SEPARATOR  ."includes"  . DIRECTORY_SEPARATOR .'index.php';
 ?>
 <?php
     $homeCss = path_to_url(__CSS__) . "/home.css";
@@ -56,9 +56,6 @@
         <br>
         <input type="button" value="Submit" id="submit">
         <br>
-        <?php 
-            
-        ?>
     </main>
     <?php get_footer();?>
  </body>
