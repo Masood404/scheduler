@@ -1,5 +1,5 @@
 <?php
-    require_once __DIR__ . DIRECTORY_SEPARATOR . "index.php";
+    require_once __DIR__ . DIRECTORY_SEPARATOR . "Task.php";
     
     //$apiKey = MY_CONFIG["Open_Ai_Key"];
     
@@ -147,4 +147,3 @@
         }
 
     }
-    $conn->close();

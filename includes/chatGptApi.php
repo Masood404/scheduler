@@ -1,16 +1,9 @@
 <?php
-    require_once __DIR__ . DIRECTORY_SEPARATOR ."index.php";
+    require_once __DIR__ . DIRECTORY_SEPARATOR ."DBConn.php";
     //header('Content-Type: application/json; charset=utf-8');
     
     $apiKey = MY_CONFIG["Open_Ai_Key"];
     
-    $hostname = "localhost";
-    $database = "scheduler";
-    $username = "root";
-    $password = "";
-
-    $conn = new mysqli($hostname, $username, $password, $database); // opening a mysqli database connection
-
     if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
         $is_requests_set = isset($_POST["gptInstance"]);
@@ -18,18 +11,18 @@
         if($is_requests_set){
             //Returns all the contents of the current gpt in the db
             function getGptContent(){
-                global $conn;
+                global $_DBConn;
                 global $id;
 
                 $query = "SELECT * FROM gptcontents
                 WHERE id = $id;";
-                $gptcontents = $conn->query($query)->fetch_all(MYSQLI_ASSOC);
+                $gptcontents = $_DBConn->query($query)->fetch_all(MYSQLI_ASSOC);
 
                 return $gptcontents;
             }
             //Adds new content to the gptcontents db 
             function addGptContent(){
-                global $conn;
+                global $_DBConn;
                 global $id;
                 global $message;
                 global $response;
@@ -37,7 +30,7 @@
                 $query = "INSERT INTO gptcontents (id, message, response)
                 VALUES (?, ?, ?);";
 
-                $stmt = $conn->prepare($query);
+                $stmt = $_DBConn->prepare($query);
 
                 if($stmt){
                     //Bind parameters to the statment
@@ -48,7 +41,7 @@
                     }
                 }
                 else{
-                    echo "Preperation failed: ".$conn->error;
+                    echo "Preperation failed: ".$_DBConn->error;
                 }
             }
 
@@ -126,7 +119,7 @@
                 $gptInsertQuery = "INSERT INTO gptinstances (id, currentmessage, title)
                 VALUE ($id, '$message', '$title');"; //adds a new gpt instance to the db
 
-                $conn->query($gptInsertQuery);
+                $_DBConn->query($gptInsertQuery);
 
                 array_push(
                     $arrToSend["messages"],
@@ -158,7 +151,7 @@
     else if($_SERVER["REQUEST_METHOD"] === 'GET'){
         $features = array(
             "getGpt" => function(){
-                global $conn;
+                global $_DBConn;
 
                 $gptInstances = getGptInstances();
                 $gptContents = getGptContents();
@@ -203,28 +196,28 @@
             $contentDeleteQuery = "DELETE FROM gptcontents
             WHERE id = $gptId;";
 
-            $conn->query($instanceDeleteQuery);
-            $conn->query($contentDeleteQuery);
+            $_DBConn->query($instanceDeleteQuery);
+            $_DBConn->query($contentDeleteQuery);
         }
     }
-    $conn->close();
+    $_DBConn->close();
 
     //Returns all the gptInstances in the db
     function getGptInstances(){
-        global $conn;
+        global $_DBConn;
 
         $query = "SELECT * FROM gptinstances";
-        $gptInstances = $conn->query($query)->fetch_all(MYSQLI_ASSOC);
+        $gptInstances = $_DBConn->query($query)->fetch_all(MYSQLI_ASSOC);
 
         return $gptInstances;
     }
     //Returns all the gptContents in ascending order in the db
     function getGptContents(){
-        global $conn;
+        global $_DBConn;
 
         $query = "SELECT * FROM gptcontents
         ORDER BY id ASC";
-        $gptContents = $conn->query($query)->fetch_all(MYSQLI_ASSOC);
+        $gptContents = $_DBConn->query($query)->fetch_all(MYSQLI_ASSOC);
 
         return $gptContents;
     }

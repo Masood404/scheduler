@@ -7,7 +7,7 @@
         https://docs.oracle.com/cd/E12058_01/doc/doc.1014/e12030/cron_expressions.htm
     */
 
-    require_once __DIR__ . DIRECTORY_SEPARATOR ."index.php";
+    require_once __DIR__ . DIRECTORY_SEPARATOR ."Task.php";
     require_once __VENDOR__ . DIR_S . "autoload.php";
 
     use Minishlink\WebPush\WebPush;
