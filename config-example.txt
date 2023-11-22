@@ -24,6 +24,10 @@
         "DB_Host" => "localhost",
         "DB_User" => "root",
         "DB_Password" => "",
+        /**
+		 * The name of the database you created. If you have created a database with different name for this project change this value.
+		 */
+		"DB_Name" => "scheduler",
 
         "Open_Ai_Key" => "{OpenAIApiKey}",
         "Weather_Key" => "{WeatherKey}",
