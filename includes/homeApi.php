@@ -106,6 +106,7 @@
            catch(mysqli_sql_exception $e){
                 if($e->getCode() == 1062){
                     //Duplicate username entry found
+                    http_response_code(409);
                     die("Duplicate entry");
                 }
                 else{

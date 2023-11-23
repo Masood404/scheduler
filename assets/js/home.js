@@ -233,6 +233,14 @@ $(document).ready(function () {
     }));
     $subscribe.click(() => NotifManager.requestSubscribe());
 
+    Users.createUser("masood", "masood123")
+        .then(() => {
+            console.log("user created");
+        })
+        .catch(() => {
+            console.log("user could not be created");
+        });
+
     //const cronExp = new RegExp(/^(\*|([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])|\*\/([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])) (\*|([0-9]|1[0-9]|2[0-3])|\*\/([0-9]|1[0-9]|2[0-3])) (\*|([1-9]|1[0-9]|2[0-9]|3[0-1])|\*\/([1-9]|1[0-9]|2[0-9]|3[0-1])) (\*|([1-9]|1[0-2])|\*\/([1-9]|1[0-2])) (\*|([0-6])|\*\/([0-6]))$/);
 
     //#region Render Modules
