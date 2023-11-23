@@ -2,18 +2,18 @@ let apiResponse = []
 
 $.ajax({
     type: "GET",
-    url: "/scheduler/includes/chatGptApi.php",
+    url: `${__project_url__}/includes/chatGptApi.php`,
     data: {
         feature: "getGpt"
     },
-    async : false,
+    async: false,
     success: function (response) {
         apiResponse = JSON.parse(response);
     },
-    error: function(){
+    error: function () {
         console.log("could not retrive gpt instances from db");
     }
-});  
+});
 
 let gptInstances = [];
 let gptCurrentInstance = {};
@@ -24,14 +24,14 @@ let loadgptInstances = () => {
 
     chatHistoryH.html("");
 
-    for(let i = 0; i < gptInstances.length; i++){
+    for (let i = 0; i < gptInstances.length; i++) {
         chatHistoryH.prepend(gptInstances[i].blockH);
     }
 }
 
 let defaultMessageTemplate = "";
 
-for(let i = 0; i < apiResponse.length; i++){
+for (let i = 0; i < apiResponse.length; i++) {
     gptInstances[i] = Gpt_Convo(apiResponse[i]);
 }
 
@@ -45,57 +45,57 @@ $(document).ready(function () {
 
     let sendTextE = $("#sendMessageText");
     let sendButtonE = $("#sendMessageButton");
-    
+
     sendTextE.on("input", function () {
-        if(parseInt(sendTextE[0].scrollHeight / parseFloat(getComputedStyle(sendTextE[0]).lineHeight)) > 10){
+        if (parseInt(sendTextE[0].scrollHeight / parseFloat(getComputedStyle(sendTextE[0]).lineHeight)) > 10) {
             sendTextE.addClass("scrollable");
         }
-        else{
+        else {
             sendTextE.removeClass("scrollable")
             sendTextE.attr("rows", 1);
             sendTextE.attr("rows", parseInt(sendTextE[0].scrollHeight / parseFloat(getComputedStyle(sendTextE[0]).lineHeight)));
         }
     });
-    sendTextE.bind('keypress',function(e){
-        if(e.which === 13 && !e.shiftKey){
+    sendTextE.bind('keypress', function (e) {
+        if (e.which === 13 && !e.shiftKey) {
             e.preventDefault();
             SendMessage(sendTextE.val());
             sendTextE.val("")
         }
     })
-    sendButtonE.click(function(){
+    sendButtonE.click(function () {
         SendMessage(sendTextE.val());
         sendTextE.val("")
     })
-    
+
     let newChatButton = $(".newChatButtonWrapper button");
 
-    newChatButton.on("click", function(){
-        if(isNewChatAllowed){
+    newChatButton.on("click", function () {
+        if (isNewChatAllowed) {
             Gpt_Convo();
         }
-        if(gptCurrentInstance.contents.length > 0){
+        if (gptCurrentInstance.contents.length > 0) {
             isNewChatAllowed = true;
         }
-        else{
+        else {
             isNewChatAllowed = false;
         }
     });
 
     /*Chat History Blocks events */
 
-    function chatBlockClickHandler(){
+    function chatBlockClickHandler() {
         SwitchGptTo($(this).attr("data-gptId"));
 
         //Scroll behaviour
         const scrollHeight = $(".chatMessages")[0].scrollHeight;
         $(".chatMessages").animate({
-            scrollTop : scrollHeight
+            scrollTop: scrollHeight
         }, 800);
     }
 
     $(".chatHistory").on("click", ".h_chatBlock", chatBlockClickHandler);
-    $(".chatHistory").on("click", ".deleteIcon", function(e){
+    $(".chatHistory").on("click", ".deleteIcon", function (e) {
         e.stopPropagation();
 
         const requestPayload = `?gptDelete=${gptCurrentInstance.id}`;
@@ -110,45 +110,45 @@ $(document).ready(function () {
         });
     })
 
-    $(".chatHistory").on("mouseenter", ".h_chatBlock", function() {
+    $(".chatHistory").on("mouseenter", ".h_chatBlock", function () {
         $(this).find(".deleteIcon").css("opacity", "0.8");
-    }).on("mouseleave", ".h_chatBlock", function() {
+    }).on("mouseleave", ".h_chatBlock", function () {
         $(this).find(".deleteIcon").css("opacity", "0"); // Reset the color on mouse leave
     });
 
     /* */
-    
-    
+
+
     console.log(gptInstances);
 });
-function SendMessage(message){
-    if(gptInstances.length < 1){
+function SendMessage(message) {
+    if (gptInstances.length < 1) {
         Gpt_Convo();
     }
-    if(message.length > 5){
+    if (message.length > 5) {
         gptCurrentInstance.newContent(message);
     }
-    else{
+    else {
         alert("Invalid Input")
     }
 }
-function SwitchGptTo(id){
+function SwitchGptTo(id) {
     gptCurrentInstance = gptInstances[id];
     gptCurrentId = id;
     $(".chatMessages").html("");
-    $(".chatMessages").html(gptCurrentInstance.getContentsH());  
+    $(".chatMessages").html(gptCurrentInstance.getContentsH());
 
     const responseCodingE = $(".m_chatGpt_wrapper .cm_contentContainer pre code");
-    
-    responseCodingE.each(function(i, obj){
-        const classes =  $(obj).attr("class");
-        let langName = ""; 
 
-        for(let i = 0; i < classes.length; i++){
-            if(classes[i] == " "){
+    responseCodingE.each(function (i, obj) {
+        const classes = $(obj).attr("class");
+        let langName = "";
+
+        for (let i = 0; i < classes.length; i++) {
+            if (classes[i] == " ") {
                 break;
             }
-            else{
+            else {
                 langName += classes[i];
             }
         }
@@ -165,7 +165,7 @@ function SwitchGptTo(id){
 
         $(obj).closest("pre").prepend(codeTopH);
     });
-    responseCodingE.closest("pre").find(".codeTop .m_codeCopyContainer").click(function(){
+    responseCodingE.closest("pre").find(".codeTop .m_codeCopyContainer").click(function () {
         const currentE = this;
         const copyText = $(currentE).closest(".codeTop").closest("pre").find("code").html();
         const eDefaultText = $(currentE).find("span").html();
@@ -177,7 +177,7 @@ function SwitchGptTo(id){
 
         $(currentE).find("span").html("Copied");
 
-        setTimeout(function(){
+        setTimeout(function () {
             $(currentE).find(".m_copyCodeIcon").removeClass("fi-bs-check");
             $(currentE).find(".m_copyCodeIcon").addClass("fi-rs-clipboard");
 
@@ -186,44 +186,44 @@ function SwitchGptTo(id){
     });
 }
 function Gpt_Convo(jsonFrom = {
-    title : "New Chat",
-    contents : [],
-    id : gptLatestId(),
-}){
+    title: "New Chat",
+    contents: [],
+    id: gptLatestId(),
+}) {
     let obj = {
-        title : jsonFrom.title || "New Chat",
-        contents : jsonFrom.contents || [],
-        blockH : null,
-        id : jsonFrom.id || gptLatestId(),
-        newContent : () => {},
-        setTitle : () => {},
-        getContentsH : getContentsH
+        title: jsonFrom.title || "New Chat",
+        contents: jsonFrom.contents || [],
+        blockH: null,
+        id: jsonFrom.id || gptLatestId(),
+        newContent: () => { },
+        setTitle: () => { },
+        getContentsH: getContentsH
     };
 
     obj.newContent = (message) => {
         let gptContent = {
-            response : null,
-            message : message
+            response: null,
+            message: message
         };
 
         //Loading started
         let loaderH = GenerateHtml(message, false) + GenerateHtml(`<div class="custom-loader"></div>`, true);
 
-        if(obj.contents.length < 1){
+        if (obj.contents.length < 1) {
             $(".chatMessages").html("");
         }
         $(".chatMessages").append(loaderH);
 
         $.ajax({
             type: "POST",
-            url: "/scheduler/includes/chatGptApi.php",
+            url: `${__project_url__}/includes/chatGptApi.php`,
             data:
-            { 
-                gptInstance : 
+            {
+                gptInstance:
                 {
-                    message : message,
-                    id : obj.id,
-                    title : obj.title
+                    message: message,
+                    id: obj.id,
+                    title: obj.title
                 }
             },
             success: function (response) {
@@ -233,7 +233,7 @@ function Gpt_Convo(jsonFrom = {
                 //Loading finished
                 SwitchGptTo(gptCurrentId);
             },
-            error : function (){
+            error: function () {
                 console.log("could not retrive data for gpt response");
             }
         });
@@ -255,7 +255,7 @@ function Gpt_Convo(jsonFrom = {
 
     return obj;
 
-    function LoadBlock(){
+    function LoadBlock() {
         let blockH = /*html*/`
             <div class="h_chatBlock" data-gptId = "${obj.id}">
                 <i class="fi fi-rr-messages h_chatIcon"></i>
@@ -264,33 +264,33 @@ function Gpt_Convo(jsonFrom = {
                     <i class="fi fi-rr-trash deleteIcon"></i>
                 </div>
             </div>
-        `;  
+        `;
 
         obj["blockH"] = blockH;
 
         return blockH;
     }
-    function getContentsH(){
+    function getContentsH() {
         let messageH = "";
-        if(obj.contents.length > 0){
-            for(let i = 0; i < obj.contents.length; i++){
+        if (obj.contents.length > 0) {
+            for (let i = 0; i < obj.contents.length; i++) {
                 messageH += GenerateHtml(obj.contents[i].message);
                 messageH += GenerateHtml(obj.contents[i].response, true);
             }
         }
-        else{
+        else {
             messageH = defaultMessageTemplate;
         }
         return messageH;
     }
-    function GenerateHtml(content, isChatContent = false){
+    function GenerateHtml(content, isChatContent = false) {
         let html;
         let updatedContent = "";
-        let mdConverter =  new showdown.Converter();
+        let mdConverter = new showdown.Converter();
 
         updatedContent = mdConverter.makeHtml(content);
 
-        if(!isChatContent){
+        if (!isChatContent) {
             html = /*html*/`
             <div class="messageBlockWrapper">
                 <div class="messageBlock">
@@ -304,7 +304,7 @@ function Gpt_Convo(jsonFrom = {
             </div>
         `;
         }
-        else{
+        else {
             html = /*html*/`
             <div class="messageBlockWrapper m_chatGpt_wrapper">
                 <div class="messageBlock">

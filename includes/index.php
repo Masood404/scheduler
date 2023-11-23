@@ -35,21 +35,27 @@
     }
 
     function get_default_head_items(){
-
         $styleCss = path_to_url(__CSS__) . '/style.css';
         $flatIcon = path_to_url(__NODE_MODULES__) . "/@flaticon/flaticon-uicons/css/all/all.css";
 
+        $project_url = __PROJECT_URL__;
+
         $jqueryJs = path_to_url(__JS__) . '/jquery.min.js';
         $mainJs = path_to_url(__JS__) . '/main.js';
+        $NotifManagerJs = path_to_url(__JS__) . "/NotifManager.js";
         $showdown = path_to_url(__NODE_MODULES__) . "/showdown/dist/showdown.min.js";
 
         $html = <<<EOD
             <link rel="stylesheet" href="$styleCss">
             <link rel="stylesheet" href="$flatIcon">
-    
+
+            <script>
+                const __project_url__ = "$project_url";
+            </script>
             <script src="$jqueryJs"></script>
             <script src="$showdown"></script>
             <script src="$mainJs"></script>
+            <script src="$NotifManagerJs"></script>
         EOD;
 
         return $html;

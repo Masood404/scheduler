@@ -10,6 +10,7 @@
         public static function createUser(string $username, string $password, ?string $email = null, ?string $subscription = null){
             global $_DBConn;
 
+            //Re-encrypt user password and email to add to the database.
             $encPass = self::encrypt($password);
             $encEmail = $email != null ? self::encrypt($email) : null;
 
@@ -42,7 +43,7 @@
                 "username" => $enc_user["username"],
                 "password" => self::decrypt($enc_user["encPass"]),
                 "email" => self::decrypt($enc_user["encEmail"]),
-                "subscription" => self::decrypt($enc_user["subscription"])
+                "subscription" => $enc_user["subscription"]
             ];
 
             return $user;

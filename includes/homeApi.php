@@ -1,5 +1,6 @@
 <?php
     require_once __DIR__ . DIRECTORY_SEPARATOR . "Task.php";
+    require_once __DIR__ . DIR_S ."Users.php";
     
     //$apiKey = MY_CONFIG["Open_Ai_Key"];
     
@@ -21,6 +22,12 @@
                  */
                 "getVapid" => function () {
                     echo MY_CONFIG["Public_VAPID"];
+                },
+                /**
+                 * Echo's RSA Public Key
+                 */
+                "getPublicKey" => function() {
+                    echo MY_CONFIG["Public_Key"];
                 }
             );
             if(isset($features[$_GET["feature"]])){
@@ -85,6 +92,26 @@
                 //Conditions not met
                 http_response_code(406);
             }
+        }
+        else if(isset($_POST["userData"])){
+           $enc_data = $_POST["userData"];
+
+           //Decrypt and convert the data to a associative array
+           $user_data = Users::decrypt($enc_data);
+           $user_data = json_decode($user_data, true);
+           
+           try{
+                Users::createUser($user_data["username"], $user_data["password"]);
+           }
+           catch(mysqli_sql_exception $e){
+                if($e->getCode() == 1062){
+                    //Duplicate username entry found
+                    die("Duplicate entry");
+                }
+                else{
+                    die("Error: " . $e->getMessage());
+                }
+           }
         }
         else if($_POST["subscription"]){
             /*Get the subscribtion object and store it in the endpoint file.

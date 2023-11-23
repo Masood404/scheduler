@@ -3,27 +3,27 @@ var $ = jQuery;
 let lattitude;
 let longitude;
 
-if(localStorage.getItem("weatherApi") != null){
+if (localStorage.getItem("weatherApi") != null) {
     lattitude = JSON.parse(localStorage.getItem("weatherApi")).lat;
-    longitude = JSON.parse(localStorage.getItem("weatherApi")).lon; 
+    longitude = JSON.parse(localStorage.getItem("weatherApi")).lon;
 }
-else{
+else {
     let coordinatesObj;
 
     lattitude = 40.7128; // New york coordinates
     longitude = -74.0060;
 
     coordinatesObj = {
-        lat : lattitude,
-        lon : longitude
+        lat: lattitude,
+        lon: longitude
     }
 
     localStorage.setItem("weatherApi", JSON.stringify(coordinatesObj));
-} 
+}
 let weatherapi = WeatherAPI(lattitude, longitude);
 
 $(document).ready(function () {
-    if(weatherapi){
+    if (weatherapi) {
         //inject weather api to header
         let todayWeatherE = $("header .todayWeather");
         let tommorowWeatherE = $("header .tommorowWeather");
@@ -49,7 +49,7 @@ $(document).ready(function () {
             <p><b>Max:</b> ${weatherapi.afterTommorow.maxTemp} C&deg;</p>
         `)
     }
-    else{
+    else {
         //Show weather api's error to the header
         let weatherContainer = $(".weatherContainer");
 
@@ -59,36 +59,36 @@ $(document).ready(function () {
     //menu animation based on navButton click
     let navUl = $("nav ul");
     let navButton = $(".menuButtonContainer .navButton");
-    let isMenuActive = false;   
+    let isMenuActive = false;
 
-    navButton.click(function () { 
+    navButton.click(function () {
         isMenuActive = !isMenuActive;
-        if(isMenuActive){
+        if (isMenuActive) {
             navUl.addClass("navAnim");
         }
-        else{
+        else {
             navUl.removeClass("navAnim");
         }
     });
 });
-function WeatherCard(weatherFI, appendTo = "body", apiInstance){
+function WeatherCard(weatherFI, appendTo = "body", apiInstance) {
     let ordinalChDatesMap = {}; //ordinal checeked dates map
     //check for ordinals in weather api dates
-    for(let i = 1; i < 32; i++){
-        if(i > 10 && i < 20){
+    for (let i = 1; i < 32; i++) {
+        if (i > 10 && i < 20) {
             ordinalChDatesMap[i] = i + "th";
         }
-        else{
-            if(i % 10 == 1){
+        else {
+            if (i % 10 == 1) {
                 ordinalChDatesMap[i] = i + "st";
             }
-            else if(i % 10 == 2){
+            else if (i % 10 == 2) {
                 ordinalChDatesMap[i] = i + "nd";
-            }   
-            else if(i % 10 == 3){
+            }
+            else if (i % 10 == 3) {
                 ordinalChDatesMap[i] = i + "rd";
             }
-            else{
+            else {
                 ordinalChDatesMap[i] = i + "th";
             }
         }
@@ -134,41 +134,41 @@ function WeatherCard(weatherFI, appendTo = "body", apiInstance){
 
     $(appendTo).append(obj.html);
 
-    $(".temperature").hover(function(){
+    $(".temperature").hover(function () {
         $(this).find(".minTemp, .maxTemp").addClass("weatherWidgetTempAnim");
-    }, function(){
+    }, function () {
         $(this).find(".minTemp, .maxTemp").removeClass("weatherWidgetTempAnim");
     })
 
     return obj;
 }
-function WeatherAPI(lattitude, longitude){
-    let forecast = {errorMessage: "could not retrive weather data"};
+function WeatherAPI(lattitude, longitude) {
+    let forecast = { errorMessage: "could not retrive weather data" };
 
     let isOk = false;
-    const url = `http://localhost/scheduler/includes/weatherApi.php?lattitude=${lattitude}&longitude=${longitude}`;
+    const url = `${__project_url__}/includes/weatherApi.php?lattitude=${lattitude}&longitude=${longitude}`;
 
     let conditionMap = [];
     $.ajax({
         type: "GET",
-        url: "/scheduler/assets/js/weather-condition-map.json",
+        url: `${__project_url__}/assets/js/weather-condition-map.json`,
         async: false,
         success: function (response) {
             conditionMap = response;
         },
-        error: function (){
+        error: function () {
             console.log("could not get weather condition json map")
         }
     });
     let updatedConditionMap = {};
 
-    for(let i = 0; i < conditionMap.length; i++){
+    for (let i = 0; i < conditionMap.length; i++) {
         let conditionCode = conditionMap[i].code;
         let conditionName = conditionMap[i].day;
 
         updatedConditionMap[conditionCode] = conditionName;
     }
-    
+
     $.ajax({
         type: "GET",
         url: url,
@@ -177,11 +177,11 @@ function WeatherAPI(lattitude, longitude){
             forecast = response;
             isOk = true;
         },
-        error: function(){
+        error: function () {
             isOk = false;
         }
     });
-    if(isOk){
+    if (isOk) {
         let forecastDay = forecast.forecast.forecastday;
         let forecastLimit = forecastDay.length;
 
@@ -192,18 +192,18 @@ function WeatherAPI(lattitude, longitude){
             3: "Wednesday",
             4: "Thursday",
             5: "Friday",
-            6: "Saturday" 
+            6: "Saturday"
         };
         const monthName = {
             0: "January",
             1: "Ferbuary",
             2: "March",
             3: "April",
-            4: "May", 
+            4: "May",
             5: "June",
             6: "July",
             7: "August",
-            8: "September", 
+            8: "September",
             9: "October",
             10: "November",
             11: "December"
@@ -219,15 +219,15 @@ function WeatherAPI(lattitude, longitude){
 
             lon: longitude,
             lat: lattitude,
-            forecastLimit : forecastLimit
+            forecastLimit: forecastLimit
         };
-        for(let i = 0; i < forecastLimit; i++){
+        for (let i = 0; i < forecastLimit; i++) {
             apiObj[i] = getForecastDayData(i);
         }
         return apiObj;
-        function getForecastDayData(index){
+        function getForecastDayData(index) {
             let conditionCode = forecastDay[index].day.condition.code;
-            return{
+            return {
                 minTemp: forecastDay[index].day.mintemp_c,
                 avgTemp: forecastDay[index].day.avgtemp_c,
                 maxTemp: forecastDay[index].day.maxtemp_c,
@@ -236,30 +236,30 @@ function WeatherAPI(lattitude, longitude){
                     code: conditionCode,
                     name: updatedConditionMap[conditionCode]
                 },
-                dayName : dayName[dayNamesI[index]],
-                date : dates.dates[index],
-                month : dates.months[index] + 1,
+                dayName: dayName[dayNamesI[index]],
+                date: dates.dates[index],
+                month: dates.months[index] + 1,
                 monthName: monthName[dates.months[index]],
                 locationName: forecast.location.name,
             }
         }
-        function getForecastDates(forecastLimit){
-            obj = {dates: {}, months: {}};
-            for(let i = 0; i < forecastLimit; i++){
+        function getForecastDates(forecastLimit) {
+            obj = { dates: {}, months: {} };
+            for (let i = 0; i < forecastLimit; i++) {
                 obj.dates[i] = new Date(forecastDay[i].date_epoch * 1000).getDate();
                 obj.months[i] = new Date(forecastDay[i].date_epoch * 1000).getMonth();
             }
             return obj;
         }
-        function getForecastDays(forecastLimit){
+        function getForecastDays(forecastLimit) {
             obj = {};
-            for(let i = 0; i < forecastLimit; i++){
+            for (let i = 0; i < forecastLimit; i++) {
                 obj[i] = new Date(forecastDay[i].date_epoch * 1000).getDay();
             }
             return obj;
         }
     }
-    else{
+    else {
         return null;
     }
 
