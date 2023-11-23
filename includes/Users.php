@@ -64,18 +64,5 @@
             return $dec_data;
         }
     }
-
-    try{
-        Users::createUser("masood", "masood123");
-    }
-    catch(mysqli_sql_exception $e){
-        if($e->getCode() == 1062){
-            //Duplicate username entry
-            die("Duplicate entry for username");
-        }
-        else{
-            die("Error: " . $e->getMessage());
-        }
-    }  
    
 ?>
