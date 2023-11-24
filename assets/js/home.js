@@ -199,7 +199,7 @@ $(document).ready(function () {
     const $fetchTasks = $("#fetch-tasks");
     const $completeTask = $("#complete-task");
     const $deleteTask = $("#delete-task");
-    const $subscribe = $("#subscribe-endpoint");
+    const $subscribe = $("#subscribe");
     const $submit = $("#submit");
 
     $startHour.val(startDate.getHours());
@@ -232,22 +232,32 @@ $(document).ready(function () {
     }, () => {
         console.log("error");
     }));
-    $subscribe.click(() => NotifManager.requestSubscribe());
 
     $submit.click(() => {
         const username = $("#username").val();
         const password = $("#password").val();
         const email = $("#email").val() == "" /*Or a regex match*/ ? null : $("#email").val();
 
-        console.log(email);
-
-        Users.createUser(username, password, email)
-            .then((response) => {
-                console.log(response);
+        if ($subscribe.is(":checked")) {
+            NotifManager.requestSubscribe((subscription) => {
+                Users.createUser(username, password, email, subscription)
+                    .then((response) => {
+                        console.log(response);
+                    })
+                    .catch((response) => {
+                        console.log("failed to create a user: " + response);
+                    })
             })
-            .catch((response) => {
-                console.log("failed to create a user: " + response);
-            })
+        }
+        else {
+            Users.createUser(username, password, email)
+                .then((response) => {
+                    console.log(response);
+                })
+                .catch((response) => {
+                    console.log("failed to create a user: " + response);
+                })
+        }
     })
 
     //const cronExp = new RegExp(/^(\*|([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])|\*\/([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])) (\*|([0-9]|1[0-9]|2[0-3])|\*\/([0-9]|1[0-9]|2[0-3])) (\*|([1-9]|1[0-9]|2[0-9]|3[0-1])|\*\/([1-9]|1[0-9]|2[0-9]|3[0-1])) (\*|([1-9]|1[0-2])|\*\/([1-9]|1[0-2])) (\*|([0-6])|\*\/([0-6]))$/);

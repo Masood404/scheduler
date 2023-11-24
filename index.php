@@ -45,7 +45,6 @@
         <br>
         <input type="button" id="complete-task" value="Complete">
         <input type="button" id="delete-task" value="Delete">
-        <input type="button" id="subscribe-endpoint" value="subscribe">
         <br>
         <br>
         <label for="username">Username</label>
@@ -59,6 +58,9 @@
         <label for="email">Email</label>
         <br>
         <input type="email" id="email">
+        <br>
+        <input type="checkbox" id="subscribe">
+        <label for="subscribe">subscribe</label>
         <br>
         <input type="button" value="Submit" id="submit">
         <br>
