@@ -41,12 +41,12 @@ const Users = {
 
                 })
                 .catch((response) => {
-                    reject(response)
+                    reject(response.responseText);
                 })
         })
     },
     /**
-     * 
+     * Get the RSA Public Key
      * @returns {Promise} if the promise is resolved pass in a parameter to the then method to get the public key
      */
     getPublicKey() {
