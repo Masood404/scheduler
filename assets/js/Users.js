@@ -35,7 +35,7 @@ const Users = {
                             reslove(response);
                         },
                         error: function (response) {
-                            reject(response)
+                            reject(response.responseText);
                         }
                     });
 

@@ -56,6 +56,10 @@
         <br>
         <input type="password" id="password">
         <br>
+        <label for="email">Email</label>
+        <br>
+        <input type="email" id="email">
+        <br>
         <input type="button" value="Submit" id="submit">
         <br>
     </main>

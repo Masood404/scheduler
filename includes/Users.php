@@ -42,8 +42,8 @@
             $user = [
                 "username" => $enc_user["username"],
                 "password" => self::decrypt($enc_user["encPass"]),
-                "email" => self::decrypt($enc_user["encEmail"]),
-                "subscription" => $enc_user["subscription"]
+                "email" => isset($enc_user["encEmail"]) ? self::decrypt($enc_user["encEmail"]) : null,
+                "subscription" => isset($enc_user["subscription"]) ? self::decrypt($enc_user["subscription"]) : null
             ];
 
             return $user;

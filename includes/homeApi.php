@@ -101,7 +101,7 @@
            $user_data = json_decode($user_data, true);
            
            try{
-                Users::createUser($user_data["username"], $user_data["password"]);
+                Users::createUser($user_data["username"], $user_data["password"], $user_data["email"], $user_data["subscription"]);
            }
            catch(mysqli_sql_exception $e){
                 if($e->getCode() == 1062){

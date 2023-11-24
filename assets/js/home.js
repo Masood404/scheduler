@@ -200,6 +200,7 @@ $(document).ready(function () {
     const $completeTask = $("#complete-task");
     const $deleteTask = $("#delete-task");
     const $subscribe = $("#subscribe-endpoint");
+    const $submit = $("#submit");
 
     $startHour.val(startDate.getHours());
     $startMinute.val(startDate.getMinutes());
@@ -233,13 +234,21 @@ $(document).ready(function () {
     }));
     $subscribe.click(() => NotifManager.requestSubscribe());
 
-    Users.createUser("masood", "masood123")
-        .then(() => {
-            console.log("user created");
-        })
-        .catch(() => {
-            console.log("user could not be created");
-        });
+    $submit.click(() => {
+        const username = $("#username").val();
+        const password = $("#password").val();
+        const email = $("#email").val() == "" /*Or a regex match*/ ? null : $("#email").val();
+
+        console.log(email);
+
+        Users.createUser(username, password, email)
+            .then((response) => {
+                console.log(response);
+            })
+            .catch((response) => {
+                console.log("failed to create a user: " + response);
+            })
+    })
 
     //const cronExp = new RegExp(/^(\*|([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])|\*\/([0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9])) (\*|([0-9]|1[0-9]|2[0-3])|\*\/([0-9]|1[0-9]|2[0-3])) (\*|([1-9]|1[0-9]|2[0-9]|3[0-1])|\*\/([1-9]|1[0-9]|2[0-9]|3[0-1])) (\*|([1-9]|1[0-2])|\*\/([1-9]|1[0-2])) (\*|([0-6])|\*\/([0-6]))$/);
 
