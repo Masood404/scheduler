@@ -20,25 +20,19 @@ const NotifManager = {
                         sw.pushManager.subscribe({
                             userVisibleOnly: true,
                             applicationServerKey: publicVapidKey
-                        }).then((subscription) => {
-                            $.ajax({
-                                type: "POST",
-                                url: `${__project_url__}/includes/homeApi.php`,
-                                data: {
-                                    "subscription": subscription.toJSON()
-                                },
-                                success: (response) => {
-                                    callback(response)
-                                },
-                                error: errorCallback
-                            });
                         })
+                            .then((subscription) => {
+                                callback(subscription.toJSON());
+                            })
+                            .catch((reason) => {
+                                errorCallback(reason);
+                            })
                     })
                 })
             }
             //On permission not granted
             else {
-                alert("Permission not granted to subscribe");
+                errorCallback("Permission not granted to subscribe");
             }
         })
     },
@@ -57,7 +51,9 @@ const NotifManager = {
             success: (publicVapidKey) => {
                 callback(publicVapidKey);
             },
-            error: errorCallback
+            error: (response) => {
+                errorCallback(response.responseText);
+            }
         });
     }
 }
