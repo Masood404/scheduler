@@ -47,23 +47,41 @@
         <input type="button" id="delete-task" value="Delete">
         <br>
         <br>
-        <label for="username">Username</label>
-        <br>
-        <input type="text" id="username">
-        <br>
-        <label for="passowrd">Passowrd</label>
-        <br>
-        <input type="password" id="password">
-        <br>
-        <label for="email">Email</label>
-        <br>
-        <input type="email" id="email">
-        <br>
-        <input type="checkbox" id="subscribe">
-        <label for="subscribe">subscribe</label>
-        <br>
-        <input type="button" value="Submit" id="submit">
-        <br>
+        <section>
+            <div>
+                <h3>Create User</h3>
+                <label for="username">Username</label>
+                <br>
+                <input type="text" id="username">
+                <br>
+                <label for="passowrd">Passowrd</label>
+                <br>
+                <input type="password" id="password">
+                <br>
+                <label for="email">Email</label>
+                <br>
+                <input type="email" id="email">
+                <br>
+                <input type="checkbox" id="subscribe">
+                <label for="subscribe">subscribe</label>
+                <br>
+                <input type="button" value="Submit" id="submit">
+            </div>
+            <div>
+                <h3>Login User</h3>
+                <label for="log-user">Username or Email</label>
+                <br>
+                <input type="text" id="log-user">
+                <br>
+                <label for="log-password">Password</label>
+                <br>
+                <input type="password" id="log-password">
+                <br>
+                <br>
+                <input type="button" value="Log In" id="log-in">
+            </div>
+            <br>
+        </section>
     </main>
     <?php get_footer();?>
  </body>
