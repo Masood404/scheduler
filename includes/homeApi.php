@@ -1,4 +1,7 @@
 <?php
+
+use Minishlink\WebPush\Subscription;
+
     require_once __DIR__ . DIRECTORY_SEPARATOR . "Task.php";
     require_once __DIR__ . DIR_S ."Users.php";
     
@@ -95,24 +98,53 @@
         }
         else if(isset($_POST["userData"])){
            $enc_data = $_POST["userData"];
+           $subscription = null;
 
-           //Decrypt and convert the data to a associative array
+           if($_POST["aesKey"]){
+                $aesKey = $_POST["aesKey"];
+                $subscription = $_POST["subscription"];
+
+               //Decrypt the AES key with RSA
+               $aesKey = Users::decrypt($aesKey);
+    
+               //Decrypt the subscription with the aquired decrypted AES key
+               $subscription = Users::decryptWithAes($subscription, $aesKey);
+           }
+            
+           //Decrypt and convert the data to an associative array
            $user_data = Users::decrypt($enc_data);
            $user_data = json_decode($user_data, true);
            
            try{
-                Users::createUser($user_data["username"], $user_data["password"], $user_data["email"], $user_data["subscription"]);
+                Users::createUser($user_data["username"], $user_data["password"], $user_data["email"], $subscription);
            }
-           catch(mysqli_sql_exception $e){
+           catch(Exception $e){
                 if($e->getCode() == 1062){
                     //Duplicate username entry found
                     http_response_code(409);
-                    die("Duplicate entry");
+                    echo "Duplicate Entry";
                 }
                 else{
-                    die("Error: " . $e->getMessage());
+                    http_response_code(500);
+                    echo "Error: " . $e->getMessage();
                 }
            }
+        }
+        else if(isset($_POST["loginData"])){
+            $enc_data = $_POST["loginData"];
+
+            //Decrypt and convert data to an associative array
+            $user_data = Users::decrypt($enc_data);
+            $user_data = json_decode($user_data, true);
+
+            try{
+                //Echo the authorization token
+                echo Users::Authenticate($user_data["username"], $user_data["password"]);
+            }
+            catch(Exception $e){
+                http_response_code(401);
+                echo $e->getMessage();
+            }
         }
         else if($_POST["subscription"]){
             /*Get the subscribtion object and store it in the endpoint file.
