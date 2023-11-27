@@ -76,114 +76,128 @@ const TasksManger = {
      * @param {String} title - Title of the task.
      * @param {Date | number} startTime - Start time of the task.
      * @param {Date |number} endTime - End time of the task.
-     * @param {Function} callback - The function to run on success. can pass in a parameter in this that will store the created task.
+     * @returns {Promise<task>} A promise resolved into a task json
      */
-    createTask(title, startTime, endTime, callback = () => null, errorCallback = () => null) {
-        //If the type of the time arguments is Date convert them to unix millisecond.
-        const p_startTime = startTime instanceof Date ? startTime.getTime() : startTime;
-        const p_endTime = startTime instanceof Date ? endTime.getTime() : endTime;
+    async createTask(title, startTime, endTime) {
+        try {
+            //If the type of the time arguments is Date convert them to unix millisecond.
+            const p_startTime = startTime instanceof Date ? startTime.getTime() : startTime;
+            const p_endTime = startTime instanceof Date ? endTime.getTime() : endTime;
 
-        //The regex pattern for a valid interval string.
-        //const validregex = new RegExp("^(c[01]{7}$)|^([dn]{1}$)", "gi");
+            //The regex pattern for a valid interval string.
+            //const validregex = new RegExp("^(c[01]{7}$)|^([dn]{1}$)", "gi");
 
-        let p_task = {}; //Object to store the returned task object with a id number.
-        //Http request
-        $.ajax({
-            type: "POST",
-            url: "http://localhost/scheduler/includes/homeApi.php",
-            data: {
-                task: {
-                    title: title,
-                    startTime: p_startTime,
-                    endTime: p_endTime,
+            //Http request
+            p_task = await $.ajax({
+                type: "POST",
+                url: "http://localhost/scheduler/includes/homeApi.php",
+                data: {
+                    task: {
+                        title: title,
+                        startTime: p_startTime,
+                        endTime: p_endTime,
+                    }
                 }
-            },
-            success: function (response) {
-                p_task = JSON.parse(response); //Store the task object
-                callback(p_task);
-            },
-            error: errorCallback
-        });
+            });
+
+            p_task = JSON.parse(p_task);
+
+            return p_task;
+        }
+        catch (error) {
+            if (error.responseText != undefined) {
+                throw "Error creating a task: " + error.responseText;
+            }
+            else {
+                throw "Error creating a task: " + error;
+            }
+        }
     },
     /**
-     * @param {Function} callback - The function to run on success. can pass in a parameter in this that will store the returned result.
      * @param {number | null} id - The requested id of the task, negative or no value will return all the task instances. (optional)
-     * @param {Function} errorCallback - The function to run on error of any network error or server error. (optional)
+     * @returns {Promise<task|tasks>} A promise resolved into a task or tasks json.
      */
-    fetchTask(callback, id = null, errorCallback = () => null) {
-        let p_task;
-        if (id < 0 || id == null) {
-            //Fetch all
-            $.ajax({
-                type: "GET",
-                url: "http://localhost/scheduler/includes/homeApi.php",
-                success: function (response) {
-                    p_task = JSON.parse(response);
-                    TasksManger.tasks = p_task;
-
-                    callback(p_task);
-                },
-                error: errorCallback
-            });
+    async fetchTask(id = null) {
+        try {
+            let p_task;
+            /*  p_task = JSON.parse(response);
+            TasksManger.tasks = p_task; */
+            if (id < 0 || id == null) {
+                //Fetch all
+                p_task = await $.ajax({
+                    type: "GET",
+                    url: "http://localhost/scheduler/includes/homeApi.php"
+                });
+                p_task = JSON.parse(response);
+                //Caches the tasks
+                TasksManger.tasks = p_task;
+            }
+            else {
+                //Fetch Single Instance
+                p_task = await $.ajax({
+                    type: "GET",
+                    url: "http://localhost/scheduler/includes/homeApi.php",
+                    data: { taskId: id }
+                });
+            }
         }
-        else {
-            //Fetch Single Instance
-            $.ajax({
-                type: "GET",
-                url: "http://localhost/scheduler/includes/homeApi.php",
-                data: { taskId: id },
-                success: function (response) {
-                    p_task = JSON.parse(response);
-                    callback(p_task);
-                },
-                error: errorCallback
-            });
+        catch (error) {
+            if (error.responseText != undefined) {
+                throw "Error fetching task: " + error.responseText;
+            }
+            else {
+                throw "Error fetching task: " + error;
+            }
         }
     },
     /**
      * Marks the completed status of the task's instance.
      * @param {number} id - The id of the requested task's instance.
      * @param {boolean | int} status - The completed status. (optional)
-     * @param {Function} callback - The function to call on success of the http request, can pass in a parameter to get a response. (optional)
-     * @param {Function} errorCallback - The function to call on error of the http request. (optional)
+     * @returns {Promise<response>} A promise resolved into a response string.
      */
-    completedStatus(id, status = true, callback = () => null, errorCallback = () => null) {
-        $.ajax({
-            type: "PUT",
-            url: "http://localhost/scheduler/includes/homeApi.php",
-            data: {
-                completedStatus: status ? 1 : 0,
-                taskId: id
-            },
-            success: (response) => {
-                callback(response);
-            },
-            error: errorCallback
-        });
+    async completedStatus(id, status = true) {
+        try {
+            const response = await $.ajax({
+                type: "PUT",
+                url: "http://localhost/scheduler/includes/homeApi.php",
+                data: {
+                    completedStatus: status ? 1 : 0,
+                    taskId: id
+                }
+            });
+
+            return response;
+
+        } catch (error) {
+            throw "Error changing the complete status task: " + error;
+        }
     },
 
     /**
      * 
      * @param {number} id - The id of the requested task's instance.
-     * @param {Function} callback - The function to call on success of the http request, can pass in a parameter to get a response. (optional)
-     * @param {Function} errorCallback - The function to call on error of the http request. (optional)
+     * @returns {Promise<response>} A promise resolved into a response string.
      */
-    deleteTask(id, callback = () => null, errorCallback = () => null) {
-        $.ajax({
-            type: "DELETE",
-            url: "http://localhost/scheduler/includes/homeApi.php",
-            data: {
-                taskId: id
-            },
-            success: function (response) {
-                callback(response);
-            },
-            error: errorCallback
-        });
+    async deleteTask(id) {
+        try {
+            const response = await $.ajax({
+                type: "DELETE",
+                url: "http://localhost/scheduler/includes/homeApi.php",
+                data: {
+                    taskId: id
+                }
+            });
+
+            return response;
+        }
+        catch (error) {
+            throw "Error deleting task: " + error.responseText;
+        }
     },
 }
 
-NotifManager.registerSw("service-worker.js");
+Users.notifManager.registerSw("service-worker.js");
 
 $(document).ready(function () {
     let startDate = new Date(); //Now
@@ -215,48 +229,49 @@ $(document).ready(function () {
 
         console.log(startDate);
 
-        TasksManger.createTask("Untitled", startDate, endDate, function (instance) {
+        TasksManger.createTask("Untitled", startDate, endDate)
+            .then((task) => {
 
-        });
+            })
+            .catch((error) => {
+
+            })
     });
     $fetchTasks.click(() => renderTasks());
-    $completeTask.click(() => TasksManger.completedStatus($taskId.val(), true,
-        (response) => {
+    $completeTask.click(() => TasksManger.completedStatus($taskId.val(), true)
+        .then((response) => {
+
+        })
+        .catch(() => {
+
+        })
+    );
+    $deleteTask.click(() => TasksManger.deleteTask($taskId.val())
+        .then((response) => {
             console.log(response);
-        }, () => {
-            console.log("error");
+        })
+        .catch((error) => {
+            console.error(error);
         })
     )
-    $deleteTask.click(() => TasksManger.deleteTask($taskId.val(), () => {
-        console.log("success");
-    }, () => {
-        console.log("error");
-    }));
 
-    $submit.click(() => {
-        const username = $("#username").val();
-        const password = $("#password").val();
-        const email = $("#email").val() == "" /*Or a regex match*/ ? null : $("#email").val();
+    $submit.click(async () => {
+        try {
+            const username = $("#username").val();
+            const password = $("#password").val();
+            const email = /*Or a regexg match*/ $("#email").val() == "" ? null : $("#email").val();
 
-        if ($subscribe.is(":checked")) {
-            NotifManager.requestSubscribe((subscription) => {
-                Users.createUser(username, password, email, subscription)
-                    .then((response) => {
-                        console.log(response);
-                    })
-                    .catch((response) => {
-                        console.log("failed to create a user: " + response);
-                    })
-            })
+            if ($subscribe.is(":checked")) {
+                const subscription = await Users.notifManager.requestSubscription();
+
+                await Users.createUser(username, password, email, subscription);
+            }
+            else {
+                await Users.createUser(username, password, email);
+            }
         }
-        else {
-            Users.createUser(username, password, email)
-                .then((response) => {
-                    console.log(response);
-                })
-                .catch((response) => {
-                    console.log("failed to create a user: " + response);
-                })
+        catch (error) {
+            console.error(error);
         }
     })
 
