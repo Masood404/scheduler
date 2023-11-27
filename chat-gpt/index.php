@@ -4,10 +4,12 @@
 ?>
 <?php 
 $css = path_to_url(__CSS__) . "/chat-gpt.css";
+$showdownJs = path_to_url(__NODE_MODULES__) . "/showdown/dist/showdown.js";
 $js = path_to_url(__JS__) . "/chat-gpt.js";
 
 $headItem = <<<EOD
     <link rel="stylesheet" href="$css">
+    <script src="$showdownJs"></script>
     <script src="$js"></script>
 
     <title>Chat GPT</title>
