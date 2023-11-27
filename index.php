@@ -4,12 +4,16 @@
 ?>
 <?php
     $homeCss = path_to_url(__CSS__) . "/home.css";
+    $cryptoJs = path_to_url(__NODE_MODULES__) . "/crypto-js/crypto-js.js";
     $jsencrypt = path_to_url(__NODE_MODULES__) . "/jsencrypt/bin/jsencrypt.min.js";
     $usersJs = path_to_url(__JS__) . "/Users.js";
     $homeJs = path_to_url(__JS__) . "/home.js";
+    $testJs = path_to_url(__JS__) . "/test.js";
+
     $headElems = <<<EOD
         <link rel="stylesheet" href="$homeCss">
         <script src="$jsencrypt"></script>
+        <script src="$cryptoJs"></script>
         <script src="$usersJs"></script>
         <script src="$homeJs"></script>
 
