@@ -41,6 +41,10 @@ class ComposerStaticInit1bae9e80265f85709f7235955fd3024a
             'GuzzleHttp\\Promise\\' => 19,
             'GuzzleHttp\\' => 11,
         ),
+        'F' => 
+        array (
+            'Firebase\\JWT\\' => 13,
+        ),
         'B' => 
         array (
             'Brick\\Math\\' => 11,
@@ -55,8 +59,8 @@ class ComposerStaticInit1bae9e80265f85709f7235955fd3024a
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-message/src',
-            1 => __DIR__ . '/..' . '/psr/http-factory/src',
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -101,6 +105,10 @@ class ComposerStaticInit1bae9e80265f85709f7235955fd3024a
         'GuzzleHttp\\' => 
         array (
             0 => __DIR__ . '/..' . '/guzzlehttp/guzzle/src',
+        ),
+        'Firebase\\JWT\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
         ),
         'Brick\\Math\\' => 
         array (
