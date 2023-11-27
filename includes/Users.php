@@ -5,17 +5,17 @@
 use Firebase\JWT\Key;
 use Minishlink\WebPush\Subscription;
 use Firebase\JWT\JWT;
+use ParagonIE\ConstantTime\Base64;
 
     class Users{
         private static string $_privateKey = MY_CONFIG["Private_Key"];
         private static string $_publicKey = MY_CONFIG["Public_Key"];
-        private static string $_jwtAlgo = "RS256";
 
         private function __construct(){
             //Uninstantiable 
         }
         /**
-         * @param string|array|null $subscription this string should be json formatted
+         * @param string|array|null $subscription If its a string it should be in json format.
          */
         public static function createUser(string $username, string $password, ?string $email = null, string|array|Subscription|null $subscription = null){
             global $_DBConn;
@@ -28,7 +28,7 @@ use Firebase\JWT\JWT;
             if($subscription instanceof Subscription || is_array($subscription)){
                 $json_encoded = json_encode($subscription, JSON_PRETTY_PRINT);
                 if($json_encoded === false){
-                    die("Users: failed encoding the subscription to json");
+                    throw new Exception("Users: failed encoding the subscription to json");
                 }
                 else{
                     $subscription = $json_encoded;
@@ -37,8 +37,8 @@ use Firebase\JWT\JWT;
             elseif(is_string($subscription)){
                 //Check if the string is in json format
                 $decoded = json_decode($subscription);
-                if($decoded == null || $subscription !== "null"){
-                    die("Users: subscription is not formatted in json");
+                if($decoded == null || $subscription === "null"){
+                    throw new Exception("Users: the subscription string should be formatted in json");
                 }
             }
 
@@ -134,13 +134,13 @@ use Firebase\JWT\JWT;
                 "exp" => $expiration
             ];
 
-            $token = JWT::encode($tokenPayload, self::$_privateKey, self::$_jwtAlgo);
+            $token = JWT::encode($tokenPayload, self::$_privateKey, "RS256");
 
             return $token;
 
         }
         /**
-         * @return null|string
+         * @return null|string The user's hashed password which is stored in the database.
          */
         public static function getHashPass(string $username) : string|null{
             global $_DBConn;
@@ -165,6 +165,9 @@ use Firebase\JWT\JWT;
             return $hasPass;
             
         }
+        /**
+         * Encrypts with RSA
+         */
         public static function encrypt(string $data){
             $pubKey = openssl_pkey_get_public(self::$_publicKey);
 
@@ -172,6 +175,9 @@ use Firebase\JWT\JWT;
             $enc_data = base64_encode($enc_data);
             return $enc_data;
         }
+        /**
+         * Decrypts an RSA encryption
+         */
         public static function decrypt(string $enc_data){
             $enc_data = base64_decode($enc_data);
             $privKey = openssl_pkey_get_private(self::$_privateKey);
@@ -180,5 +186,19 @@ use Firebase\JWT\JWT;
 
             return $dec_data;
         }
+        /**
+         * Decrypts an AES encryption.
+         * @param string|Base64 $encrypted_data The encrypted data should be parsed into a base 64 string.
+         * @param string|Base64 $aes_key The aes key should be parsed into a base 64 string.
+         */
+        public static function decryptWithAes(string|Base64 $encrypted_data, string|Base64 $aes_key): string|false{
+            $aes_key = base64_decode($aes_key);
+            $encrypted_data = base64_decode($encrypted_data);
+
+            $decrypted = openssl_decrypt($encrypted_data, "aes-256-ecb", $aes_key, OPENSSL_RAW_DATA);
+
+            return $decrypted;
+        }
     }
+
 ?>
