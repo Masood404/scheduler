@@ -146,7 +146,7 @@ function WeatherAPI(lattitude, longitude) {
     let forecast = { errorMessage: "could not retrive weather data" };
 
     let isOk = false;
-    const url = `${__project_url__}/includes/weatherApi.php?lattitude=${lattitude}&longitude=${longitude}`;
+    const url = `${__project_url__}/api/forecast.php?lat=${lattitude}&lon=${longitude}`;
 
     let conditionMap = [];
     $.ajax({
