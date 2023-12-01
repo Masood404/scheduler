@@ -11,7 +11,7 @@
         if($is_requests_set){
             //Returns all the contents of the current gpt in the db
             function getGptContent(){
-                global $_DBConn;
+                $_DBConn = DBConn::getInstance()->getConnection();
                 global $id;
 
                 $query = "SELECT * FROM gptcontents
@@ -22,7 +22,7 @@
             }
             //Adds new content to the gptcontents db 
             function addGptContent(){
-                global $_DBConn;
+                $_DBConn = DBConn::getInstance()->getConnection();
                 global $id;
                 global $message;
                 global $response;
@@ -151,7 +151,7 @@
     else if($_SERVER["REQUEST_METHOD"] === 'GET'){
         $features = array(
             "getGpt" => function(){
-                global $_DBConn;
+                $_DBConn = DBConn::getInstance()->getConnection();
 
                 $gptInstances = getGptInstances();
                 $gptContents = getGptContents();
@@ -204,7 +204,7 @@
 
     //Returns all the gptInstances in the db
     function getGptInstances(){
-        global $_DBConn;
+        $_DBConn = DBConn::getInstance()->getConnection();
 
         $query = "SELECT * FROM gptinstances";
         $gptInstances = $_DBConn->query($query)->fetch_all(MYSQLI_ASSOC);
@@ -213,7 +213,7 @@
     }
     //Returns all the gptContents in ascending order in the db
     function getGptContents(){
-        global $_DBConn;
+        $_DBConn = DBConn::getInstance()->getConnection();
 
         $query = "SELECT * FROM gptcontents
         ORDER BY id ASC";

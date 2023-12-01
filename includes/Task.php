@@ -3,19 +3,18 @@
         This file contains utility functions for tasks records in the database.
     */
 
-    require_once __DIR__ . DIRECTORY_SEPARATOR . "constants.php";
     require_once __DIR__ . DIRECTORY_SEPARATOR . "DBConn.php";
 
     /**
      * @param int $id - The id of the requested instance, negative or no value will return all the instances.
      */
     function getTask($id = null){
-        global $DBConn;
+        $_DBConn = DBConn::getInstance()->getConnection();
         if($id < 0 || $id == null){
             //Get all task instances Query
             $getQ = "SELECT * FROM tasks;";
             
-            $tasks = $DBConn->query($getQ)->fetch_all(MYSQLI_ASSOC);
+            $tasks = $_DBConn->query($getQ)->fetch_all(MYSQLI_ASSOC);
             return $tasks;
         }
         else{
@@ -23,7 +22,7 @@
             $getQ = "SELECT * FROM tasks
             WHERE id = $id;";
 
-            $taskArr = $DBConn->query($getQ)->fetch_assoc(); //Store the query result in an assoc arrayS
+            $taskArr = $_DBConn->query($getQ)->fetch_assoc(); //Store the query result in an assoc arrayS
             return $taskArr;
         }
     }
@@ -50,7 +49,7 @@
      * The nearest next task from the current time
      */
     function getNextTask(){
-        global $DBConn;
+        $_DBConn = DBConn::getInstance()->getConnection();
 
         $currentTime = new DateTime("now");
         $currentTimeStamp = $currentTime->getTimestamp();
@@ -60,7 +59,7 @@
         ORDER BY ABS(startTime - $currentTimeStamp)
         LIMIT 1;";
 
-        $nextTask = $DBConn->query($getQ)->fetch_assoc();
+        $nextTask = $_DBConn->query($getQ)->fetch_assoc();
 
         return $nextTask;
 
@@ -70,7 +69,7 @@
      * @param int $taskId
      */
     function deleteTask($taskId){
-        global $DBConn;
+        $_DBConn = DBConn::getInstance()->getConnection();
     
         //Task id does not exist or out of bounds
         if($taskId > count(getTask()) || $taskId < 0){
@@ -80,7 +79,7 @@
             $deleteQ = "DELETE FROM tasks
             WHERE id = $taskId;";
 
-            $DBConn->query($deleteQ);
+            $_DBConn->query($deleteQ);
             return true;
         }
     }

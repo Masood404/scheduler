@@ -2,10 +2,10 @@
     require_once __DIR__ . DIRECTORY_SEPARATOR . "DBConn.php";
     require_once __VENDOR__ . DIR_S . "autoload.php";
 
-use Firebase\JWT\Key;
-use Minishlink\WebPush\Subscription;
-use Firebase\JWT\JWT;
-use ParagonIE\ConstantTime\Base64;
+    use Firebase\JWT\Key;
+    use Minishlink\WebPush\Subscription;
+    use Firebase\JWT\JWT;
+    use ParagonIE\ConstantTime\Base64;
 
     class Users{
         private static string $_privateKey = MY_CONFIG["Private_Key"];
@@ -18,7 +18,7 @@ use ParagonIE\ConstantTime\Base64;
          * @param string|array|null $subscription If its a string it should be in json format.
          */
         public static function createUser(string $username, string $password, ?string $email = null, string|array|Subscription|null $subscription = null){
-            global $_DBConn;
+            $_DBConn = DBConn::getInstance()->getConnection();
 
             //Hash the password and rencrypt the email.
             $hashPass = password_hash($password, PASSWORD_DEFAULT);
@@ -58,7 +58,7 @@ use ParagonIE\ConstantTime\Base64;
          * @return array|null
          */
         public static function getUser(string $username) : array|null{
-            global $_DBConn; 
+            $_DBConn = DBConn::getInstance()->getConnection(); 
 
             $query = "SELECT * FROM users WHERE username = ?;";
 
@@ -89,7 +89,7 @@ use ParagonIE\ConstantTime\Base64;
          * Checks if the user exists
          */
         public static function exists(string $username) : bool{
-            global $_DBConn;
+            $_DBConn = DBConn::getInstance()->getConnection();
 
             $query = "SELECT CASE 
             WHEN EXISTS (SELECT 1 FROM users WHERE username = ?) 
@@ -143,7 +143,7 @@ use ParagonIE\ConstantTime\Base64;
          * @return null|string The user's hashed password which is stored in the database.
          */
         public static function getHashPass(string $username) : string|null{
-            global $_DBConn;
+            $_DBConn = DBConn::getInstance()->getConnection();
 
             $query = "SELECT hashPass FROM users WHERE username = ?";
             $stmt = $_DBConn->prepare($query);
