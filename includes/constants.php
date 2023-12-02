@@ -52,6 +52,7 @@
     define("__PACKAGES__", __INCLUDES__ . DIR_S . "packages");
     define("__NODE_MODULES__", __PACKAGES__ . DIR_S . "node_modules");
     define("__VENDOR__", __PACKAGES__ . DIR_S . "vendor");
+    define("__SCRIPTS__", __INCLUDES__ . DIR_S . "scripts");
  
     #endregion
 
