@@ -2,9 +2,12 @@
     require_once __DIR__ . DIRECTORY_SEPARATOR . "DBConn.php";
     require_once __VENDOR__ . DIR_S . "autoload.php";
 
+    use Firebase\JWT\BeforeValidException;
+    use Firebase\JWT\ExpiredException;
     use Firebase\JWT\Key;
     use Minishlink\WebPush\Subscription;
     use Firebase\JWT\JWT;
+    use Firebase\JWT\SignatureInvalidException;
     use ParagonIE\ConstantTime\Base64;
 
     class Users{
@@ -126,7 +129,7 @@
                 $expiration = $expiration->getTimestamp();
             }
             elseif(is_null($expiration)){
-                $expiration = time() + 30 * 30; //After 30 minutes
+                $expiration = time() + 30 * 60; //After 30 minutes
             }
 
             $tokenPayload = [
@@ -138,6 +141,59 @@
 
             return $token;
 
+        }
+        /**
+         * Authorizes a user based on a JSON Web Token.
+         *
+         * @param string $jwt The JSON Web Token
+         *
+         * @return string|array The token's username or an empty string or on failure,
+         *                     an array will be returned containing the information the error.
+         */
+        public static function Authorize(string $jwt): string|array {
+            try {
+                // Decoding the JWT token using the provided public key and algorithm RS256
+                $decodedToken = JWT::decode($jwt, new Key(self::$_publicKey, "RS256"));
+
+                // Extracting the username from the decoded token
+                $username = $decodedToken->usr;
+
+                return $username;
+            }
+            catch (ExpiredException $e){
+                return [
+                    "error" => "Expired",
+                    "errorMessage" => $e->getMessage()
+                ];
+            } 
+            catch (BeforeValidException $e) {
+                return [
+                    "error" => "BeforeValid",
+                    "errorMessage" => $e->getMessage()
+                ];
+            } 
+            catch (SignatureInvalidException $e) {
+                return [
+                    "error" => "InvalidSignature",
+                    "errorMessage" => $e->getMessage()
+                ];
+            } 
+            catch (UnexpectedValueException $e) {
+                return [
+                    "error" => "InvalidToken",
+                    "errorMessage" => $e->getMessage()
+                ];
+            }
+            catch (Exception $e) {
+                // Consider handling specific exceptions thrown during JWT decoding
+                // Log or handle the exception as required
+                // Returning an empty string in case of any exception for simplicity
+                error_log('Authorization failed: ' . $e->getMessage());
+                return [
+                    "error" => "UnIdentifiedError",
+                    "errorMessage" => $e->getMessage()
+                ];
+            }
         }
         /**
          * @return null|string The user's hashed password which is stored in the database.
