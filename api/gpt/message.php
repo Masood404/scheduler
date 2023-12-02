@@ -40,11 +40,6 @@
         try{
             // Retrieve the chat based on username and chatId
             $chat = $ChatsDB->getChat($username, $chatId);
-
-            // Check if the chat exists
-            if(empty($chat)){
-                throw new Exception("The provided chat id does not exist in the database.");
-            }
         }
         catch(Exception $e){
             sendErrorResponse($e->getMessage(), 400);

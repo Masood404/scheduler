@@ -90,7 +90,11 @@
                     ];
                 }
             }
-        
+            
+            if(empty($chats)){
+                throw new Exception("The provided chat id does not exist in the database.");
+            }
+
             // Return the array of chats (indexed numerically)
             return array_values($chats);
         }        
