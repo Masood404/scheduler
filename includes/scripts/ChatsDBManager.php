@@ -162,17 +162,17 @@
          * Delete the entire chat and its contents from the DB.
          * @param int $chatId The ID of the chat to delete
          */
-        public function deleteChat(int $chatId){
+        public function deleteChat(string $username, int $chatId){
             $_DBConn = $this->_DBConn;
 
             //Query to delete the entire chat and its contents
             $query = "DELETE chats, chatscontents
             FROM chats
             JOIN chatscontents ON chats.id = chatscontents.chatId
-            WHERE chats.id = ?";
+            WHERE chats.username = ? AND chats.id = ?";
 
             try {
-                $_DBConn->executeQuery($query, $chatId);
+                $_DBConn->executeQuery($query, [$username, $chatId]);
             } 
             catch (Exception) {
                 throw new Exception("Failed executing deleting chat from the db");
