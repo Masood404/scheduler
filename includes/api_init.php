@@ -7,6 +7,7 @@
 
     /**
      * Authorizes through HTTP Authorization header.
+     * @return array The header authorization's token payload.
      */
     function authorizeToken(){
         // Retrieve headers
@@ -17,7 +18,9 @@
             $authorizationHeader = $headers["Authorization"];
             if (strpos($authorizationHeader, 'Bearer') === 0) {
                 $token = trim(substr($authorizationHeader, 7)); // Extract token after 'Bearer '
-                return Users::Authorize($token);
+                $tokenPayload = Users::Authorize($token);
+                $tokenPayload["token"] = $token;
+                return $tokenPayload;
             } else {
                 return ["error" => "Bearer Token Unset"];
             }
