@@ -39,7 +39,7 @@
 
         try{
             // Retrieve the chat based on username and chatId
-            $chat = $ChatsDB->getChat($username, $chatId);
+            $chat = $ChatsDB->getChat($username, $chatId)[0];
         }
         catch(Exception $e){
             sendErrorResponse($e->getMessage(), 400);
@@ -72,8 +72,8 @@
         $response = "";
 
         // Generate response based on previous messages and prompt
-        if($prevMessages != null && $chatId != null){
-            $response = OpenAIChatHandler::messagePrompt($prompt, $prevMessages);
+        if($prevMessages != null){
+            $response = OpenAIChatHandler::messagePrompt($prompt, ...$prevMessages);
         }
         else{
             // If no previous messages or chatId, generate a title and response
