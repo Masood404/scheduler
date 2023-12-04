@@ -92,7 +92,7 @@
             }
             
             if(empty($chats)){
-                throw new Exception("The provided chat id does not exist in the database.");
+                throw new Exception("No matching resource found in the database for the provided parameters.");
             }
 
             // Return the array of chats (indexed numerically)
@@ -178,7 +178,42 @@
                 throw new Exception("Failed executing deleting chat from the db");
             }
             
+        }
 
+        /**
+         * Delete multiple chats with their contents from the DB.
+         * @param string $username The username associated with the chats to delete
+         * @param int[] $chatIds The IDs of the chats to delete
+         * @throws Exception if there's an error in deleting chats or invalid input
+         */
+        public function deleteChats(string $username, array $chatIds) {
+            $_DBConn = $this->_DBConn;
+            
+            // Construct the SQL query
+            $query = "DELETE chats, chatscontents
+                FROM chats
+                JOIN chatscontents ON chats.id = chatscontents.chatId
+                WHERE chats.username = ? AND chats.id IN (";
+
+            // Validate and construct the SQL query
+            for ($i = 0; $i < count($chatIds) - 1; $i++) {
+                if (!is_int($chatIds[$i])) {
+                    throw new Exception('Parameter $chatIds is expected to have elements of integer for method ChatsDbManager::deleteChats()');
+                }
+                $query .= "?, ";
+            }
+            $query .= "?);";
+
+            try {
+                // Execute the delete query with prepared statement
+                $_DBConn->executeQuery($query, [$username, ...$chatIds]);
+            } catch (mysqli_sql_exception $e) {
+                // Handle specific database-related exceptions
+                throw new Exception("Database error: " . $e->getMessage());
+            } catch (Exception $e) {
+                // General error handling
+                throw new Exception("Failed executing deleting multiple chats from the db: " . $e->getMessage());
+            }
         }
     }
 ?>
