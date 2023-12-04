@@ -50,7 +50,7 @@
 
             $stmt = $_DBConn->prepare($query);
             if(!$stmt){
-                die("_DBConn Preperation failed: " . $_DBConn->error);
+                throw new Exception("_DBConn Preperation failed: " . $_DBConn->error);
             }
 
             $stmt->bind_param("ssss", $username, $hashPass, $encEmail, $subscription);
@@ -83,7 +83,7 @@
             $user = [
                 "username" => $enc_user["username"],
                 "email" => isset($enc_user["encEmail"]) ? self::decrypt($enc_user["encEmail"]) : null,
-                "subscription" => isset($enc_user["subscription"]) ? self::decrypt($enc_user["subscription"]) : null
+                "subscription" => $enc_user["subscription"]
             ];
 
             return $user;
@@ -129,12 +129,14 @@
                 $expiration = $expiration->getTimestamp();
             }
             elseif(is_null($expiration)){
-                $expiration = time() + 30 * 60; //After 30 minutes
+                $expiration = time() + 60 * 60 * 24; //After 24 hours
             }
 
+            //Generate a new jwt.
             $tokenPayload = [
                 "usr" => $username,
-                "exp" => $expiration
+                "exp" => $expiration,
+                "salt" => self::generateRandomString()
             ];
 
             $token = JWT::encode($tokenPayload, self::$_privateKey, "RS256");
@@ -150,15 +152,26 @@
          * @return string|array The token's username or an empty string or on failure,
          *                     an array will be returned containing the information the error.
          */
-        public static function Authorize(string $jwt): string|array {
+        public static function Authorize(string $jwt): array {
             try {
+                $blackListedTokens = self::getBlacklistedTokens();
+
+                foreach($blackListedTokens as $blackToken){
+                    if($jwt == $blackToken["token"]){
+                        throw new ExpiredException("The provided token is black listed");
+                    }
+                }
+
                 // Decoding the JWT token using the provided public key and algorithm RS256
                 $decodedToken = JWT::decode($jwt, new Key(self::$_publicKey, "RS256"));
 
-                // Extracting the username from the decoded token
-                $username = $decodedToken->usr;
+                $tokenArr = [
+                    "usr" => $decodedToken->usr,
+                    "exp" => $decodedToken->exp,
+                    "salt" => $decodedToken->salt
+                ];
 
-                return $username;
+                return $tokenArr;
             }
             catch (ExpiredException $e){
                 return [
@@ -195,6 +208,91 @@
                 ];
             }
         }
+        /**
+         * Refreshes a JWT token by re-authorizing and generating a new token based on the provided token.
+         * 
+         * @param string $jwt The JWT token to be refreshed.
+         * @return string The newly generated JWT token.
+         * @throws Exception If there's an error in authorization or during the token generation process.
+         */
+        public static function refreshToken(string $jwt){
+            // Authorize token 
+            $authResult = self::Authorize($jwt);
+
+            // Check if there's an error in the authorization result
+            if(isset($authResult["error"])){
+                // Throw an exception with the specific error message if authorization fails
+                throw new Exception($authResult["error"]);
+            }
+
+            //Black list the previous token
+            self::blackListToken($jwt);
+
+            //Change the token's salt which is its unique identifier.
+            $authResult["salt"] = self::generateRandomString();
+
+            // Generate a new token based on the authorized result and private key using RS256 algorithm
+            return JWT::encode($authResult, self::$_privateKey, "RS256");
+        }
+ 
+        /**
+         * Blacklists a JWT token by adding it to the token_black_list table in the database.
+         * 
+         * @param string $jwt The JWT token to be blacklisted.
+         * @throws Exception If the provided token is already invalidated or encounters an error during the process.
+         */
+        public static function blackListToken(string $jwt){
+            // Authorize token
+            $authResult = self::Authorize($jwt);
+
+            // Check if there's an error in the authorization result
+            if(isset($authResult["error"])){
+                // Throw an exception if the token is already invalidated
+                throw new Exception("The provided token for the method Users::blackListToken is already invalidated");
+            }
+
+            // Get a database connection instance
+            $_DBConn = DBConn::getInstance();  
+
+            // Extract the expiration time from the token payload
+            $exp = $authResult["exp"];
+
+            // Prepare the SQL query to insert the token into the blacklist table
+            $query = "INSERT INTO token_black_list (token, expiration)
+                    VALUES (?, ?);";
+
+            // Execute the query with token and expiration values
+            $_DBConn->executeQuery($query, [$jwt, $exp]);
+        }
+        /**
+         * Retrieves all blacklisted tokens from the 'token_black_list' table in the database.
+         *
+         * @return array An array containing all the blacklisted tokens and their expiration times.
+         *               The structure of the returned array: [ ['token' => 'token_value', 'expiration' => 'expiration_time'], ... ]
+         * @throws Exception If an error occurs during the database query execution.
+         */
+        public static function getBlacklistedTokens(){
+            // Get a database connection instance
+            $_DBConn = DBConn::getInstance()->getConnection();
+
+            // Prepare the SQL query to fetch all blacklisted tokens and their expiration times
+            $query = "SELECT token, expiration FROM token_black_list";
+
+            try {
+                // Execute the query to retrieve blacklisted tokens
+                $result = $_DBConn->query($query);
+
+                // Fetch all rows as an associative array
+                $blacklistedTokens = $result->fetch_all(MYSQLI_ASSOC);
+
+                // Return the array containing blacklisted tokens and their expiration times
+                return $blacklistedTokens;
+            } catch (mysqli_sql_exception $e) {
+                // Throw an exception if there's an error during the database query execution
+                throw new Exception("Error retrieving blacklisted tokens: " . $e->getMessage());
+            }
+        }
+
         /**
          * @return null|string The user's hashed password which is stored in the database.
          */
@@ -255,6 +353,26 @@
 
             return $decrypted;
         }
+        /**
+         * Function to generate a random string
+         */
+        public static function generateRandomString($length = 10) {
+            // Define characters that will be used in generating the random string
+            $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            
+            // Initialize an empty string to store the generated random string
+            $randomString = '';
+            
+            // Loop through the specified length to create the random string
+            for ($i = 0; $i < $length; $i++) {
+                // Append a randomly selected character from the character set to the random string
+                $randomString .= $characters[rand(0, strlen($characters) - 1)];
+            }
+            
+            // Return the generated random string
+            return $randomString;
+        }
+
     }
 
 ?>
