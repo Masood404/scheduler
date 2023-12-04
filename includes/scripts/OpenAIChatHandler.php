@@ -32,7 +32,7 @@
             }
 
             try{
-                // Call the ChatCompletion method (assuming it's defined elsewhere) with the constructed request parameters
+                // Call the ChatCompletion method
                 $response = self::ChatCompletion($requestParams);
 
                 if (isset($response["choices"][0]["message"]["content"])) {
@@ -42,7 +42,7 @@
                 }
                 else{
                     $error = json_encode($requestParams);
-                    throw new Exception("Unexpected response format from the external API: $error");
+                    throw new Exception("Unexpected response format from the external API, request paramsPayload: $error");
                 }
             }
             catch(Exception $e){
