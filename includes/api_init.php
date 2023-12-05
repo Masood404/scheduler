@@ -3,7 +3,7 @@
         This file is used to configure api endpoints.
     */
 
-    require_once __DIR__.DIRECTORY_SEPARATOR."Users.php";
+    require_once realpath(__DIR__."/scripts/Users.php");
 
     /**
      * Authorizes through HTTP Authorization header.
