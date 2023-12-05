@@ -6,7 +6,7 @@
     $homeCss = path_to_url(__CSS__) . "/home.css";
     $cryptoJs = path_to_url(__NODE_MODULES__) . "/crypto-js/crypto-js.js";
     $jsencrypt = path_to_url(__NODE_MODULES__) . "/jsencrypt/bin/jsencrypt.min.js";
-    $usersJs = path_to_url(__JS__) . "/Users.js";
+    $usersJs = path_to_url(__JS__) . "/User.js";
     $homeJs = path_to_url(__JS__) . "/home.js";
     $testJs = path_to_url(__JS__) . "/test.js";
 
@@ -23,34 +23,6 @@
  ?>
 <body>
     <main>      
-        <label>Start Date</label>
-        <br>
-        <input type="number" id="start-hour">
-        <input type="number" id="start-minute">
-        <br>
-        <label>End Date</label><br>
-        <input type="number" id="end-hour">
-        <input type="number" id="end-minute">
-        <br>
-        <br>
-        <label for="cron-expression">Cron Expression</label>
-        <br>
-        <input type="text" id="cron-expression">
-        <br>
-        <br>
-        <input type="button" id="create-task" value="Create Task">
-        <input type="button" id="fetch-tasks" value="Fetch Tasks">
-        <br>
-        <br>
-        <label for="task-id">Task Id</label>
-        <br>
-        <input type="number" id="task-id">
-        <br>
-        <br>
-        <input type="button" id="complete-task" value="Complete">
-        <input type="button" id="delete-task" value="Delete">
-        <br>
-        <br>
         <section>
             <div>
                 <h3>Create User</h3>

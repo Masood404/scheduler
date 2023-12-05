@@ -2,7 +2,7 @@
     Make sure to also include the libraries CryptoJS and JSEncrypt in the document using script tags.
 */
 
-const Users = {
+const User = {
     /**
      * This method will encrypt and send the user data to the backend.
      * 
@@ -10,10 +10,14 @@ const Users = {
      * @param {string} password 
      * @param {string} email 
      * @param {PushSubscription} subscription the subscription should be aquired using the NotifManager
-     * @returns {Promise<string>} if the promise is resolved pass in a parameter to the then method to get the response
+     * @returns {Promise<void>} The promise will resolve into nothing, it will set the authToken and reload.
      */
-    async createUser(username, password, email = null, subscription = null) {
+    async create(username, password, email = null, subscription = null) {
         try {
+            if (localStorage.getItem("authToken")) {
+                throw "User already logged in!";
+            }
+
             let userData = JSON.stringify({
                 username: username,
                 password: password,
@@ -35,24 +39,106 @@ const Users = {
                 aesKey = await this.crypto.encrypt(aesKey);
             }
 
-            try {
-                const response = await $.ajax({
-                    type: "POST",
-                    url: `${__project_url__}/includes/homeApi.php`,
-                    data: {
-                        userData: userData,
-                        aesKey: aesKey,
-                        subscription: subscription
-                    }
-                });
-                return response;
-            }
-            catch (error) {
-                throw error.responseText;
-            }
+            const response = await $.ajax({
+                type: "POST",
+                url: `${__project_url__}/api/users/create.php`,
+                data: {
+                    createData: userData,
+                    aesKey: aesKey,
+                    subscription: subscription
+                }
+            });
+
+            const authToken = response.authToken;
+
+            localStorage.setItem("authToken", authToken);
+            localStorage.setItem("newAuthToken", true);
 
         }
         catch (error) {
+            if (error.responseText) {
+                throw error.responseText;
+            }
+            throw error;
+        }
+    },
+    /**
+     * This method will get the autorization token and set it in the localstorage.
+     * @param {string} username 
+     * @param {string} password 
+     * @param {boolean} remember If true the authorization token will be valid for 30 days.
+     * @return {Promise<void>} The will not resolve, it will set the authToken in localstorage and reload.
+     */
+    async login(username, password, remember = false) {
+        try {
+            if (localStorage.getItem("authToken")) {
+                throw "User already logged in!";
+            }
+
+            let loginData = JSON.stringify({
+                username: username,
+                password: password,
+                remember: remember
+            });
+
+            loginData = await this.crypto.encrypt(loginData);
+
+            const response = await $.ajax({
+                type: "POST",
+                url: `${__project_url__}/api/users/login.php`,
+                data: {
+                    loginData: loginData
+                },
+            });
+
+            localStorage.setItem("authToken", response.authToken);
+            localStorage.setItem("newAuthToken", true);
+
+            location.reload();
+        }
+        catch (error) {
+            if (error.responseText) {
+                throw error.responseText;
+            }
+            throw error;
+        }
+    },
+    /**
+     * This method will remove the authoriation token from the localstorage.
+     */
+    logout() {
+        localStorage.removeItem("authToken");
+        location.reload();
+    },
+    /**
+     * Refresh the authorization token that is stored in localstorage.
+     * @returns {Promise<void>} does not resolve in to anything just check for success or failure.
+     */
+    async refreshToken() {
+        const authToken = localStorage.getItem("authToken");
+        try {
+            if (!authToken) {
+                throw "No authorization token found";
+            }
+            else if (localStorage.getItem("newAuthToken")) {
+                localStorage.removeItem("newAuthToken");
+            }
+            else {
+                const response = await $.ajax({
+                    type: "POST",
+                    url: `${__project_url__}/api/users/refresh-token.php`,
+                    beforeSend: (xhr) => {
+                        xhr.setRequestHeader("Authorization", `Bearer ${authToken}`);
+                    }
+                });
+
+                localStorage.setItem("authToken", response.authToken);
+            }
+        }
+        catch (error) {
+            if (error.responseText) {
+                throw error.responseText.error;
+            }
             throw error;
         }
     },
@@ -60,6 +146,7 @@ const Users = {
      * Property to encrypt user data.
      */
     crypto: {
+        //To be cached
         publicKey: null,
         /**
          * RSA public encryption
@@ -75,7 +162,7 @@ const Users = {
                 }
                 else {
                     publicKey = await this.getPublicKey();
-                    //Cache the public key until reload.
+                    //Cache the public key until page reload.
                     this.publicKey = publicKey;
                 }
 
