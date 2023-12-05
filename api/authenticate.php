@@ -4,7 +4,6 @@
     */
 
     require_once realpath(__DIR__."/../includes/api_init.php");
-    require_once __INCLUDES__.DIR_S."Users.php";
 
     header("Access-Control-Allow-Origin: *");
     header("Content-Type: application/json");
