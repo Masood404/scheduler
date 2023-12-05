@@ -151,15 +151,15 @@ const User = {
          */
         async getPublicKey() {
             try {
-                const publicKey = await $.ajax({
+                const response = await $.ajax({
                     type: "GET",
-                    url: `${__project_url__}/includes/homeApi.php`,
+                    url: `${__project_url__}/api/users/get-crypto-keys.php`,
                     data: {
-                        feature: "getPublicKey"
+                        key: "rsa"
                     }
                 });
 
-                return publicKey;
+                return response.rsaKey;
             }
             catch (error) {
                 throw "Error getting the public key: " + error;
@@ -244,15 +244,15 @@ const User = {
          */
         async requestPublicVapid() {
             try {
-                const publicVapidKey = await $.ajax({
+                const response = await $.ajax({
                     type: "GET",
-                    url: `${__project_url__}/includes/homeApi.php`,
+                    url: `${__project_url__}/api/users/get-crypto-keys.php`,
                     data: {
-                        feature: "getVapid"
+                        "key": "vapid"
                     }
                 });
 
-                return publicVapidKey;
+                return response.vapidKey;
             }
             catch (error) {
                 throw error;
