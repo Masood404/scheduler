@@ -111,38 +111,6 @@ const User = {
         location.reload();
     },
     /**
-     * Refresh the authorization token that is stored in localstorage.
-     * @returns {Promise<void>} does not resolve in to anything just check for success or failure.
-     */
-    async refreshToken() {
-        const authToken = localStorage.getItem("authToken");
-        try {
-            if (!authToken) {
-                throw "No authorization token found";
-            }
-            else if (localStorage.getItem("newAuthToken")) {
-                localStorage.removeItem("newAuthToken");
-            }
-            else {
-                const response = await $.ajax({
-                    type: "POST",
-                    url: `${__project_url__}/api/users/refresh-token.php`,
-                    beforeSend: (xhr) => {
-                        xhr.setRequestHeader("Authorization", `Bearer ${authToken}`);
-                    }
-                });
-
-                localStorage.setItem("authToken", response.authToken);
-            }
-        }
-        catch (error) {
-            if (error.responseText) {
-                throw error.responseText.error;
-            }
-            throw error;
-        }
-    },
-    /**
      * Property to encrypt user data.
      */
     crypto: {
