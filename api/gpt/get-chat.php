@@ -17,7 +17,7 @@
 
     // Successful authorization
     // Extract the username
-    $username = $authorizationResult;
+    $username = $authorizationResult["usr"];
 
     // Implement the chats interface that connects to the database.
     $ChatsDB = new ChatsDBManager();
