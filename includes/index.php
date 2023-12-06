@@ -47,9 +47,6 @@
             <link rel="stylesheet" href="$styleCss">
             <link rel="stylesheet" href="$flatIcon">
 
-            <script>
-                const __project_url__ = "$project_url";
-            </script>
             <script src="$jqueryJs"></script>
             <script src="$mainJs"></script>
 

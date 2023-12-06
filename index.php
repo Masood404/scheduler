@@ -33,6 +33,9 @@
     elseif($requestURI == path_to_uri(__CSS__)."/style.css"){
         require_once __CSS__.DIR_S."style.php";
     }
+    elseif($requestURI == path_to_uri(__JS__)."/main.js"){
+        require_once __JS__.DIR_S."main.php";
+    }
     elseif(!$pageFound) {
         require_once "404.php";
     }
