@@ -1,29 +1,40 @@
 <?php
-    //Dependecies
-    require_once __DIR__ . DIRECTORY_SEPARATOR  ."includes"  . DIRECTORY_SEPARATOR .'index.php';
-?>
-<?php
-    $homeCss = path_to_url(__CSS__) . "/home.css";
-    $cryptoJs = path_to_url(__NODE_MODULES__) . "/crypto-js/crypto-js.js";
-    $jsencrypt = path_to_url(__NODE_MODULES__) . "/jsencrypt/bin/jsencrypt.min.js";
-    $usersJs = path_to_url(__JS__) . "/User.js";
-    $homeJs = path_to_url(__JS__) . "/home.js";
-    $testJs = path_to_url(__JS__) . "/test.js";
+    /*
+        Front controller.
+    */
 
-    $headElems = <<<EOD
-        <link rel="stylesheet" href="$homeCss">
-        <script src="$jsencrypt"></script>
-        <script src="$cryptoJs"></script>
-        <script src="$usersJs"></script>
-        <script src="$homeJs"></script>
+    require_once realpath(__DIR__."/includes/constants.php");
 
-        <title>Home</title>
-    EOD;    
-    get_header($headElems);
- ?>
-<body>
-    <main>      
+    $requestURI = $_SERVER["REQUEST_URI"];
+    $baseUri = path_to_uri(__PROJECT__);
+
+    $pages = scandir(__PROJECT__.DIR_S."view");
+
+    // Remove '.' (current directory) and '..' (parent directory) from $pages
+    $pages = array_diff($pages, array('.', '..'));
+
+    $pageFound = false;
+
+    foreach($pages as $page){
+        //remove the ".php" from file names.
+        $pageName = str_replace(".php", "", $page);
+        // Optional trailing slash and case-insensitive
+        $pagePattern = "/$pageName\/?/i"; 
         
-    </main>
-    <?php get_footer();?>
- </body>
+        if(preg_match($pagePattern, $requestURI)){
+            require_once __VIEW__.DIR_S.$page;
+            $pageFound = true;
+            break;
+        }
+    }
+    if (!$pageFound && $requestURI == $baseUri."/") {
+        require_once __VIEW__.DIR_S."home.php";
+    } 
+    elseif($requestURI == path_to_uri(__CSS__)."/style.css"){
+        require_once __CSS__.DIR_S."style.php";
+    }
+    elseif(!$pageFound) {
+        require_once "404.php";
+    }
+
+?>
