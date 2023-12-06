@@ -46,6 +46,8 @@
     define("__JS__", __ASSETS__ . DIR_S . "js");
     define("__IMAGES__"  , __ASSETS__ . DIR_S . "images");
 
+    define("__VIEW__", __PROJECT__ . DIR_S . "view");
+
     define("__TEMPLATES__", __PROJECT__ . DIR_S . "templates");
 
     define("__INCLUDES__", __PROJECT__ . DIR_S . "includes");
@@ -85,6 +87,8 @@
     #endregion
 
     /**
+     * NOT THE SAME AS "path_to_uri()".
+     * 
      * Converts system paths to a url, for example:
      * c:/xampp/htdocs/scheduler/assets --> http://localhost/scheduler/assets
      * 
@@ -100,5 +104,23 @@
      */
     function path_to_url($path){
         return HTTP_WRAPPER . HTTP_HOST . str_replace(DIR_S, "/",str_replace(__SERVER_ROOT__, "", $path));
+    }
+
+    /**
+     * NOT THE SAME AS "path_to_url()".
+     * 
+     * Converts system paths to a url, for example:
+     * c:/xampp/htdocs/scheduler/assets --> /scheduler/assets
+     * 
+     * This functiion also requires constants of:
+     * * \_\_SREVER_ROOT\_\_
+     * * DIR_S
+     * make sure to have these constant set vailidly.
+     * 
+     * @param string path the path you want to change to uri
+     *  @return string str_replace(DIR_S, "/", str_replace(__SERVER_ROOT__, "", $path));
+     */
+    function path_to_uri($path){
+        return str_replace(DIR_S, "/", str_replace(__SERVER_ROOT__, "", $path));
     }
 ?>
