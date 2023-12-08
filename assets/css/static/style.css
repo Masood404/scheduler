@@ -39,7 +39,7 @@ nav ul{
     padding-inline-start: 0;
     text-align: center;
 
-    transform: translateY(-150px);
+    transform: translateY(-200px);
     transition: transform 0.4s ease;
 }
 .navAnim{

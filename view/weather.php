@@ -5,6 +5,8 @@
     $js = path_to_url(__JS__) . "/weather.js";
 
     $headItem = <<<EOD
+        <title>Weather</title>
+
         <link rel="stylesheet" href="$css">
         <script src="$js"></script>
 

@@ -4,15 +4,16 @@
 
     $css = path_to_url(__CSS__) . "/chat-gpt.css";
     $showdownJs = path_to_url(__NODE_MODULES__) . "/showdown/dist/showdown.js";
+    $userJs = path_to_url(__JS__)."/User.js";
     $js = path_to_url(__JS__) . "/chat-gpt.js";
 
-    $headItem = <<<EOD
-        <link rel="stylesheet" href="$css">
+    $headItem = <<<HTML
+        <link rel= "stylesheet" href="$css">
         <script src="$showdownJs"></script>
         <script src="$js"></script>
 
         <title>Chat GPT</title>
-    EOD;
+    HTML;
     get_header($headItem);
 ?>
 <body>       

@@ -1,4 +1,12 @@
 /**
+ * This function will remove the authoriation token from the localstorage.
+ */
+function logout() {
+    localStorage.removeItem("authToken");
+    location.reload();
+}
+
+/**
  * Refresh the authorization token that is stored in localstorage.
  * @returns {Promise<void>} does not resolve in to anything just check for success or failure.
  */
@@ -24,8 +32,9 @@ async function refreshToken() {
         }
     }
     catch (error) {
-        if (error.responseText) {
-            throw error.responseText.error;
+        if (error.responseJSON) {
+            localStorage.removeItem("authToken");
+            throw error.responseJSON.error;
         }
         throw error;
     }
@@ -69,6 +78,42 @@ else {
 let weatherapi = WeatherAPI(lattitude, longitude);
 
 $(document).ready(function () {
+    const $navUl = $("nav ul");
+
+    let currTitle = $("title").html() || "";
+    currTitle = currTitle.replace(/\s/g, '');
+
+    let navUlHtml = "";
+
+    for (const key in navElems) {
+        const tempKey = key.replace(/\s/g, '');
+
+        if (tempKey == "Login" || tempKey == "Register") {
+            if (!isLogged) {
+                if (currTitle == key) {
+                    navUlHtml += /* html */ `<li class = "currentPageNavElem"><a href="${navElems[key]}">${key}</a></li>`;
+                }
+                else {
+                    navUlHtml += /* html */ `<li><a href="${navElems[key]}">${key}</a></li>`;
+                }
+            }
+        }
+        else {
+            if (currTitle == tempKey) {
+                navUlHtml += /* html */ `<li class = "currentPageNavElem"><a href="${navElems[key]}">${key}</a></li>`;
+            }
+            else {
+                navUlHtml += /* html */ `<li><a href="${navElems[key]}">${key}</a></li>`;
+            }
+        }
+    }
+
+    if (isLogged) {
+        navUlHtml += /* html */ `<li><a href="" onclick="logout()">Logout</a></li>`
+    }
+
+    $navUl.html(navUlHtml);
+
     if (weatherapi) {
         //inject weather api to header
         let todayWeatherE = $("header .todayWeather");
