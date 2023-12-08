@@ -8,20 +8,28 @@ const User = {
      * 
      * @param {string} username 
      * @param {string} password 
+     * @param {string} remember 
      * @param {string} email 
      * @param {PushSubscription} subscription the subscription should be aquired using the NotifManager
      * @returns {Promise<void>} The promise will resolve into nothing, it will set the authToken and reload.
      */
-    async create(username, password, email = null, subscription = null) {
+    async create(username, password, remember = false, email = null, subscription = null) {
         try {
             if (localStorage.getItem("authToken")) {
                 throw "User already logged in!";
+            }
+            if (!this.validateUsername(username) || !this.validatePassword(password)) {
+                throw "Invalid username or password!";
+            }
+            if (email != null && !this.validateEmail(email)) {
+                throw "Invalid email!";
             }
 
             let userData = JSON.stringify({
                 username: username,
                 password: password,
-                email: email
+                email: email,
+                remember: remember
             });
             //Encrypt user data with RSA
             userData = await this.crypto.encrypt(userData);
@@ -54,6 +62,8 @@ const User = {
             localStorage.setItem("authToken", authToken);
             localStorage.setItem("newAuthToken", true);
 
+            location.reload();
+
         }
         catch (error) {
             if (error.responseText) {
@@ -73,6 +83,12 @@ const User = {
         try {
             if (localStorage.getItem("authToken")) {
                 throw "User already logged in!";
+            }
+            if (!this.validateUsername(username)) {
+                throw "Invalid username!";
+            }
+            else if (!this.validatePassword(password)) {
+                throw "Invalid password!";
             }
 
             let loginData = JSON.stringify({
@@ -103,12 +119,33 @@ const User = {
             throw error;
         }
     },
+    logout: logout,
     /**
-     * This method will remove the authoriation token from the localstorage.
+     * Used to validate a username
+     * @param {string} username 
      */
-    logout() {
-        localStorage.removeItem("authToken");
-        location.reload();
+    validateUsername(username) {
+        const usernamePattern = /^[a-zA-Z0-9_-]{3,32}$/;
+
+        return usernamePattern.test(username);
+    },
+    /**
+     * Used to validate a password
+     * @param {string} password 
+     */
+    validatePassword(password) {
+        const passwordPattern = /^(?=.*[A-Za-z0-9])[A-Za-z0-9\d@$_#\-]{8,}$/;
+
+        return passwordPattern.test(password)
+    },
+    /**
+     * Used to validate an email
+     * @param {string} email 
+     */
+    validateEmail(email) {
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        return emailPattern.test(email);
     },
     /**
      * Property to encrypt user data.
@@ -227,10 +264,10 @@ const User = {
                     return subscription;
                 }
                 else {
-                    throw "Permission not granted";
+                    throw "Permission not granted for subscription";
                 }
             } catch (error) {
-                if (error === "Permission not granted") {
+                if (error === "Permission not granted for subscription") {
                     throw error;
                 }
                 else {
