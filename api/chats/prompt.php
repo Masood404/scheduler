@@ -33,7 +33,7 @@
     }
 
     // Check if 'chatId' field is provided
-    if(isset($_POST["chatId"])){
+    if(isset($_POST["chatId"]) && $_POST["chatId"] != null){
         // If field provided, retrieve and validate the chatId
         $chatId = $_POST["chatId"];
 
