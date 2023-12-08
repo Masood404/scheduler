@@ -24,24 +24,24 @@
 
         //Both Aes key and subscription would either be set or null at the same time (nullable).
         $aesKey = null;
-        $subscription = null;
+        $sub = null;
         
         try{
-            if(isset($_POST["aesKey"], $_POST["subscription"])){
+            if(isset($_POST["aesKey"], $_POST["subscription"]) && $_POST["aesKey"] != null && $_POST["subscription"] != null){
                 //Decrypt the aes key using the RSA key then decrypt the subscription using the aquired aesKey.
                 $aesKey = Users::decrypt($_POST["aesKey"]);
                 $sub = Users::decryptWithAes($_POST["subscription"], $aesKey);
-            }
-            else{
-                throw new Exception("Failed decrypting subscription");
             }
     
             //Create the user
             Users::createUser($userData["username"], $userData["password"], $email, $sub);
 
+            //30 days or the default token expiration time.
+            $authTokenExp = $userData["remember"] == true ? time() + 60 * 60 * 24 * 30 : null;
+
             //Respond with an authorization token.
             echo json_encode([
-                "authToken" => Users::Authenticate($userData["username"], $userData["password"])
+                "authToken" => Users::Authenticate($userData["username"], $userData["password"], $authTokenExp)
             ]);
         }
         catch(Exception $e){
