@@ -152,22 +152,21 @@
          *
          * @param string $jwt The JSON Web Token
          *
-         * @return string|array The token's username or an empty string or on failure,
+         * @return string|array The token's payload or an empty string or on failure,
          *                     an array will be returned containing the information the error.
          */
         public static function Authorize(string $jwt): array {
             try {
-                $blackListedTokens = self::getBlacklistedTokens();
-
-                foreach($blackListedTokens as $blackToken){
-                    if($jwt == $blackToken["token"]){
-                        throw new ExpiredException("The provided token is black listed");
-                    }
-                }
-
                 // Decoding the JWT token using the provided public key and algorithm RS256
                 $decodedToken = JWT::decode($jwt, new Key(self::$_publicKey, "RS256"));
 
+                //Check if the user exists and the token is not blacklisted.
+                $valid = self::exists($decodedToken->usr) && !self::isBlackListedToken($jwt);
+                if(!$valid){
+                    throw new ExpiredException("The provided token is blacklisted or the token's user does not exist");
+                }
+
+                //Convert decoded token to an associative array.
                 $tokenArr = [
                     "usr" => $decodedToken->usr,
                     "exp" => $decodedToken->exp,
@@ -268,33 +267,33 @@
             $_DBConn->executeQuery($query, [$jwt, $exp]);
         }
         /**
-         * Retrieves all blacklisted tokens from the 'token_black_list' table in the database.
-         *
-         * @return array An array containing all the blacklisted tokens and their expiration times.
-         *               The structure of the returned array: [ ['token' => 'token_value', 'expiration' => 'expiration_time'], ... ]
+         * Checks if a token is from the 'token_black_list' table in the database.
+         * @param string $token The JWT token to check for.
          * @throws Exception If an error occurs during the database query execution.
          */
-        public static function getBlacklistedTokens(){
-            // Get a database connection instance
-            $_DBConn = DBConn::getInstance()->getConnection();
+        public static function isBlackListedToken(string $token): bool|Exception{
+            // Get a database connection interface
+            $_DBConn = DBConn::getInstance();
 
-            // Prepare the SQL query to fetch all blacklisted tokens and their expiration times
-            $query = "SELECT token, expiration FROM token_black_list";
+            // The SQL query 
+            $query = "SELECT CASE 
+            WHEN EXISTS (SELECT 1 FROM token_black_list WHERE token = ?) 
+            THEN 1 
+            ELSE 0 
+            END AS token_exists;";
 
             try {
-                // Execute the query to retrieve blacklisted tokens
-                $result = $_DBConn->query($query);
+                //Execute query and get result
+                $result = $_DBConn->executeQuery($query, $token);
 
-                // Fetch all rows as an associative array
-                $blacklistedTokens = $result->fetch_all(MYSQLI_ASSOC);
+                return $result->fetch_assoc()["token_exists"];
 
-                // Return the array containing blacklisted tokens and their expiration times
-                return $blacklistedTokens;
             } catch (mysqli_sql_exception $e) {
                 // Throw an exception if there's an error during the database query execution
-                throw new Exception("Error retrieving blacklisted tokens: " . $e->getMessage());
+                throw new Exception("Error run: " . $e->getMessage());
             }
         }
+        
 
         /**
          * @return null|string The user's hashed password which is stored in the database.
