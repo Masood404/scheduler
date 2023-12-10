@@ -89,7 +89,7 @@
 
         // Send the response as JSON
         echo json_encode([
-            "response" => $response
+            "chatId" => $chatId
         ]);
     }
     catch(Exception $e){
