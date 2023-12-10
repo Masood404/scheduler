@@ -58,6 +58,33 @@ main > .chatContainer{
 .chatHistoryBar > .chatHistory *{
     direction: ltr;
 }
+#chat_selection_wrapper{
+    padding: 0 10px;
+    display: flex;
+    justify-content: space-between;
+}
+#chat_selection{
+    display: block;
+    padding: 10px;
+    border-style: solid;
+    border-color: rgb(80, 80, 80);
+    border-width: 1px;
+    border-radius: 8px 8px 8px 8px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s ease;
+}
+#chat_selection:hover{
+    background-color: rgba(255, 255, 255, 0.05);
+}
+#chat_selection_box{
+    accent-color: var(--accent-color);
+}
+#chat_selection_delete{
+    display: block;
+    align-self: center;
+    cursor: pointer;
+}
 .h_chatBlock{
     display: flex;
     overflow: hidden;
@@ -71,6 +98,9 @@ main > .chatContainer{
 
     transition: background-color 0.2s ease;
 }
+.h_isSelected{
+    background-color: rgba(255, 255, 255, 0.05);
+}
 .h_chatBlock:hover{
     background-color: rgba(255, 255, 255, 0.05);
 }
@@ -78,23 +108,9 @@ main > .chatContainer{
     display: block;
 }
 .h_chatBlock > .h_chatTitle{
-    width: 15em;
+    flex: 1;
     overflow-x: hidden;
     position: relative;
-}
-.h_chatBlock > .h_chatTitle:after{
-    content:"";
-    width:20%;
-    position:absolute;
-    right:0;
-    top:0;
-    height:100%;
-    background-image: linear-gradient(to right, rgba(255, 255, 255, 0), var(--default-bg-color))
-}
-.h_chatBlock .deleteIcon{
-    opacity: 0;
-
-    transition: opacity 0.4s ease;
 }
 .chatHistoryBar > .chatHistory::-webkit-scrollbar-track{
     background-color: transparent;
@@ -239,18 +255,39 @@ main > .chatContainer{
     margin-block-end: 1.5em;
 }
 
-/*Gpt text loader*/
-.custom-loader {
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
-    background: 
-      radial-gradient(farthest-side,#D3D9E9 94%,#0000) top/4px 4px no-repeat,
-      conic-gradient(#0000 30%,#D3D9E9);
-    -webkit-mask: radial-gradient(farthest-side,#0000 calc(100% - 4px),#000 0);
-    animation:s3 1s infinite linear;
-  }
-  
-  @keyframes s3{ 
-    100%{transform: rotate(1turn)}
+.response-loader {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 1em;
+}
+.response-loader div {
+    display: inline-block;
+    position: absolute;
+    left: 8px;
+    width: 8px;
+    background: #fff;
+    animation: response-loader 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+}
+.response-loader div:nth-child(1) {
+    left: 4px;
+    animation-delay: -0.24s;
+}
+.response-loader div:nth-child(2) {
+    left: 16px;
+    animation-delay: -0.12s;
+}
+.response-loader div:nth-child(3) {
+    left: 28px;
+    animation-delay: 0;
+}
+@keyframes response-loader {
+    0% {
+        top: 8px;
+        height: 32px;
+    }
+    50%, 100% {
+        top: 12px;
+        height: 16px;
+    }
 }
