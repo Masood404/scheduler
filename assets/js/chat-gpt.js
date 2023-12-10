@@ -1,323 +1,382 @@
-let apiResponse = []
+/**
+ * @typedef {Object} Chat
+ * @property {number} id - The ID of the chat.
+ * @property {Array<Object>} contents - An array of chat contents.
+ * @property {string} title - The title of the chat.
+ * @property {string} username - The username associated with the chat.
+ */
 
-$.ajax({
-    type: "GET",
-    url: `${__project_url__}/includes/chatGptApi.php`,
-    data: {
-        feature: "getGpt"
-    },
-    async: false,
-    success: function (response) {
-        apiResponse = JSON.parse(response);
-    },
-    error: function () {
-        console.log("could not retrive gpt instances from db");
-    }
-});
+/**
+ * @typedef {Object} Content
+ * @property {string} message - The message content.
+ * @property {string} response - The response content.
+ */
 
-let gptInstances = [];
-let gptCurrentInstance = {};
-let gptLatestId = () => gptInstances.length;
-let gptCurrentId = gptLatestId();
-let loadgptInstances = () => {
-    let chatHistoryH = $(".chatHistory");
-
-    chatHistoryH.html("");
-
-    for (let i = 0; i < gptInstances.length; i++) {
-        chatHistoryH.prepend(gptInstances[i].blockH);
-    }
-}
-
-let defaultMessageTemplate = "";
-
-for (let i = 0; i < apiResponse.length; i++) {
-    gptInstances[i] = Gpt_Convo(apiResponse[i]);
-}
-
-console.log(apiResponse.length);
-
-let isNewChatAllowed = true;
-
-$(document).ready(function () {
-    defaultMessageTemplate = $(".chatMessages").html()
-    loadgptInstances();
-
-    let sendTextE = $("#sendMessageText");
-    let sendButtonE = $("#sendMessageButton");
-
-    sendTextE.on("input", function () {
-        if (parseInt(sendTextE[0].scrollHeight / parseFloat(getComputedStyle(sendTextE[0]).lineHeight)) > 10) {
-            sendTextE.addClass("scrollable");
-        }
-        else {
-            sendTextE.removeClass("scrollable")
-            sendTextE.attr("rows", 1);
-            sendTextE.attr("rows", parseInt(sendTextE[0].scrollHeight / parseFloat(getComputedStyle(sendTextE[0]).lineHeight)));
-        }
-    });
-    sendTextE.bind('keypress', function (e) {
-        if (e.which === 13 && !e.shiftKey) {
-            e.preventDefault();
-            SendMessage(sendTextE.val());
-            sendTextE.val("")
-        }
-    })
-    sendButtonE.click(function () {
-        SendMessage(sendTextE.val());
-        sendTextE.val("")
-    })
-
-    let newChatButton = $(".newChatButtonWrapper button");
-
-    newChatButton.on("click", function () {
-        if (isNewChatAllowed) {
-            Gpt_Convo();
-        }
-        if (gptCurrentInstance.contents.length > 0) {
-            isNewChatAllowed = true;
-        }
-        else {
-            isNewChatAllowed = false;
-        }
-    });
-
-    /*Chat History Blocks events */
-
-    function chatBlockClickHandler() {
-        SwitchGptTo($(this).attr("data-gptId"));
-
-        //Scroll behaviour
-        const scrollHeight = $(".chatMessages")[0].scrollHeight;
-        $(".chatMessages").animate({
-            scrollTop: scrollHeight
-        }, 800);
+/**
+ * Chats Interface module for handling chat-related operations.
+ * @returns {Object} - Object containing methods for chat operations.
+ */
+const ChatsInterface = () => {
+    if (!isLogged) {
+        throw "User is not authorized";
     }
 
-    $(".chatHistory").on("click", ".h_chatBlock", chatBlockClickHandler);
-    $(".chatHistory").on("click", ".deleteIcon", function (e) {
-        e.stopPropagation();
-
-        const requestPayload = `?gptDelete=${gptCurrentInstance.id}`;
-
-        $.ajax({
-            type: "DELETE",
-            url: `/scheduler/includes/chatGptApi.php${requestPayload}`,
-            async: false,
-            success: function (response) {
-                location.reload();
+    const setAuthorizationHeader = () => {
+        $.ajaxSetup({
+            beforeSend: (xhr) => {
+                xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem("authToken"));
             }
         });
-    })
-
-    $(".chatHistory").on("mouseenter", ".h_chatBlock", function () {
-        $(this).find(".deleteIcon").css("opacity", "0.8");
-    }).on("mouseleave", ".h_chatBlock", function () {
-        $(this).find(".deleteIcon").css("opacity", "0"); // Reset the color on mouse leave
-    });
-
-    /* */
-
-
-    console.log(gptInstances);
-});
-function SendMessage(message) {
-    if (gptInstances.length < 1) {
-        Gpt_Convo();
-    }
-    if (message.length > 5) {
-        gptCurrentInstance.newContent(message);
-    }
-    else {
-        alert("Invalid Input")
-    }
-}
-function SwitchGptTo(id) {
-    gptCurrentInstance = gptInstances[id];
-    gptCurrentId = id;
-    $(".chatMessages").html("");
-    $(".chatMessages").html(gptCurrentInstance.getContentsH());
-
-    const responseCodingE = $(".m_chatGpt_wrapper .cm_contentContainer pre code");
-
-    responseCodingE.each(function (i, obj) {
-        const classes = $(obj).attr("class");
-        let langName = "";
-
-        for (let i = 0; i < classes.length; i++) {
-            if (classes[i] == " ") {
-                break;
-            }
-            else {
-                langName += classes[i];
-            }
-        }
-
-        const codeTopH = /*html*/`
-            <div class="codeTop">
-                <div class="m_codeLangName">${langName}</div>
-                <div class="m_codeCopyContainer">
-                    <i class="fi fi-rs-clipboard m_copyCodeIcon"></i>
-                    <span>Copy code</span>
-                </div>
-            </div>
-        `;
-
-        $(obj).closest("pre").prepend(codeTopH);
-    });
-    responseCodingE.closest("pre").find(".codeTop .m_codeCopyContainer").click(function () {
-        const currentE = this;
-        const copyText = $(currentE).closest(".codeTop").closest("pre").find("code").html();
-        const eDefaultText = $(currentE).find("span").html();
-
-        navigator.clipboard.writeText(copyText);
-
-        $(currentE).find(".m_copyCodeIcon").removeClass("fi-rs-clipboard");
-        $(currentE).find(".m_copyCodeIcon").addClass("fi-bs-check");
-
-        $(currentE).find("span").html("Copied");
-
-        setTimeout(function () {
-            $(currentE).find(".m_copyCodeIcon").removeClass("fi-bs-check");
-            $(currentE).find(".m_copyCodeIcon").addClass("fi-rs-clipboard");
-
-            $(currentE).find("span").html(eDefaultText);
-        }, 1500)
-    });
-}
-function Gpt_Convo(jsonFrom = {
-    title: "New Chat",
-    contents: [],
-    id: gptLatestId(),
-}) {
-    let obj = {
-        title: jsonFrom.title || "New Chat",
-        contents: jsonFrom.contents || [],
-        blockH: null,
-        id: jsonFrom.id || gptLatestId(),
-        newContent: () => { },
-        setTitle: () => { },
-        getContentsH: getContentsH
     };
 
-    obj.newContent = (message) => {
-        let gptContent = {
-            response: null,
-            message: message
-        };
-
-        //Loading started
-        let loaderH = GenerateHtml(message, false) + GenerateHtml(`<div class="custom-loader"></div>`, true);
-
-        if (obj.contents.length < 1) {
-            $(".chatMessages").html("");
+    const prompt = async (prompt, chatId = null) => {
+        try {
+            setAuthorizationHeader();
+            const response = await $.ajax({
+                type: "POST",
+                url: `${__project_url__}/api/chats/prompt.php`,
+                data: {
+                    prompt: prompt,
+                    chatId: chatId
+                },
+            });
+            return response.chatId;
+        } catch (error) {
+            throw error.responseJson || error;
         }
-        $(".chatMessages").append(loaderH);
+    };
 
-        $.ajax({
-            type: "POST",
-            url: `${__project_url__}/includes/chatGptApi.php`,
-            data:
-            {
-                gptInstance:
-                {
-                    message: message,
-                    id: obj.id,
-                    title: obj.title
-                }
-            },
-            success: function (response) {
-                gptContent.response = JSON.parse(response).response;
-                obj.setTitle(JSON.parse(response).title);
-                loadgptInstances();
-                //Loading finished
-                SwitchGptTo(gptCurrentId);
-            },
-            error: function () {
-                console.log("could not retrive data for gpt response");
+    const get = async (chatId) => {
+        setAuthorizationHeader();
+        return await $.ajax({
+            type: "GET",
+            url: `${__project_url__}/api/chats/get-chat.php`,
+            data: {
+                chatId: chatId
             }
         });
-        obj.contents.push(gptContent);
+    };
 
-        return gptContent;
-    }
-    obj.setTitle = (titleName) => {
-        obj.title = titleName;
-        LoadBlock();
-    }
-    obj.blockH = LoadBlock();
+    const getAll = async () => {
+        setAuthorizationHeader();
+        return await $.ajax({
+            type: "GET",
+            url: `${__project_url__}/api/chats/get-chat.php`,
+        });
+    };
 
-    gptInstances.push(obj);
-    gptCurrentInstance = obj;
+    const deleteChat = async (chatIds) => {
+        setAuthorizationHeader();
+        return await $.ajax({
+            type: "DELETE",
+            url: `${__project_url__}/api/chats/delete-chat.php?chatId=[${chatIds}]`,
+        });
+    };
 
-    loadgptInstances();
-    SwitchGptTo(obj.id);
+    return {
+        /**
+         * Sends a prompt to the chat.
+         * @param {string} prompt - The prompt message.
+         * @param {number} [chatId=null] - The ID of the chat. Defaults to null.
+         * @returns {Promise<number>} - Resolves into the newly added content's chat ID.
+         */
+        prompt,
+        /**
+        * Retrieves a chat by ID.
+        * @param {number} chatId - The ID of the chat.
+        * @returns {Promise<Chat>} - Resolves to an object containing chat data.
+        */
+        get,
+        /**
+        * Retrieves all chats for the user.
+        * @returns {Promise<Array<Chat>>} - Resolves to an array containing all the chats data for the user.
+        */
+        getAll,
+        /**
+         * Deletes chats by ID(s).
+         * @param {number|Array<number>} chatIds - A single chat ID or an array of chat IDs.
+         * @returns {Promise<Array<Chat>>} - Resolves to all the chats on successful chat deletion.
+         */
+        deleteChat
+    };
+};
 
-    return obj;
+$(async () => {
+    const defaultMessageContainer = $(".chatMessages").html();
 
-    function LoadBlock() {
-        let blockH = /*html*/`
-            <div class="h_chatBlock" data-gptId = "${obj.id}">
-                <i class="fi fi-rr-messages h_chatIcon"></i>
-                <div class="h_chatTitle">${obj.title}</div>
-                <div class="h_chatDelete" data-gptId = "${obj.id}">
-                    <i class="fi fi-rr-trash deleteIcon"></i>
-                </div>
+    if (!isLogged) {
+        const unloggedHtml = /* html */ `
+            <div style="text-align: center; margin-top: 1em;">
+                <div style="margin-top: 1em;">User is not logged in!</div>
+                <a href="${__project_url__}/login" style="display: block; margin-top: 0.5em;">Login Here</a>
             </div>
         `;
+        //Render the message when the user is not logged in.
+        $(".chatHistoryBar").html(unloggedHtml);
+        //Render the default message
+        $(".chatMessages").html(defaultMessageContainer);
+        //Remove the chatSendMessage Input with its entire wrapper.
+        $(".chatSendMessageWrapper").remove();
 
-        obj["blockH"] = blockH;
-
-        return blockH;
+        //Break code execution.
+        return;
     }
-    function getContentsH() {
-        let messageH = "";
-        if (obj.contents.length > 0) {
-            for (let i = 0; i < obj.contents.length; i++) {
-                messageH += GenerateHtml(obj.contents[i].message);
-                messageH += GenerateHtml(obj.contents[i].response, true);
-            }
+
+    /**
+     * An Instance of ChatsInterface.
+     */
+    const ChatsI = ChatsInterface();
+    /**
+     * A global variable used to cache chats.
+     */
+    let chatsInstances = [];
+    /**
+     * Currently seleted chat's id.
+     */
+    let currentChatId = null;
+
+    await renderChats();
+
+    let isChecked = false;
+    const chatSelection = $("#chat_selection");
+    const chatSelectionBox = $("#chat_selection_box");
+
+    chatSelection.click(() => {
+        isChecked = chatSelectionBox.is(":checked");
+        if (!isChecked) {
+            $(".h_chatBlock").removeClass("h_isSelected");
+        }
+    });
+
+    $(".chatHistory").on("click", ".h_chatBlock", function () {
+        if (isChecked) {
+            $(this).toggleClass("h_isSelected");
+        } else {
+            renderChatContents($(this).attr("data-chat-id"));
+        }
+    });
+
+    $("#chat_selection_delete").click(() => {
+        const chatIds = $(".h_isSelected").map((index, element) => $(element).attr("data-chat-id")).get();
+        ChatsI.deleteChat(chatIds)
+            .then(renderChats)
+            .catch(console.error);
+    });
+
+    /**
+     * Handler for sending messages.
+     */
+    const sendMessageHandler = async (e) => {
+        const message = $("#sendMessageText").val();
+        renderLoader(message);
+        ChatsI.prompt(message, currentChatId)
+            .then(async (chatId) => {
+                await renderChats();
+                unrenderLoader();
+                renderChatContents(chatId);
+            })
+            .catch((error) => {
+                alert(error);
+                unrenderLoader();
+            });
+    };
+    // Click event for the send message button
+    $("#sendMessageButton").click(sendMessageHandler);
+
+    // Keypress event for sending messages with Enter key
+    $("#sendMessageText").bind("keypress", (e) => {
+        if (e.which === 13 && !e.shiftKey) {
+            e.preventDefault();
+            sendMessageHandler(e);
+            $("#sendMessageText").val("")
+        }
+    })
+
+    // Input event for adjusting textarea height
+    $("#sendMessageText").on("input", function () {
+        if (parseInt($(this)[0].scrollHeight / parseFloat(getComputedStyle($(this)[0]).lineHeight)) > 10) {
+            $(this).addClass("scrollable");
         }
         else {
-            messageH = defaultMessageTemplate;
+            $(this).removeClass("scrollable")
+            $(this).attr("rows", 1);
+            $(this).attr("rows", parseInt($(this)[0].scrollHeight / parseFloat(getComputedStyle($(this)[0]).lineHeight)));
         }
-        return messageH;
+    });
+
+    // Click event for copying code to clipboard
+    $(".chatMessages").on("click", ".m_codeCopyContainer", function () {
+        const copyText = $(this).closest(".codeTop").closest("pre").find("code").text();
+        navigator.clipboard.writeText(copyText);
+
+        // Animate the clipboard by changing the clipboard icon to a tick
+        const $icon = $(this).find(".m_copyCodeIcon");
+        $icon.removeClass("fi-rs-clipboard").addClass("fi-bs-check");
+
+        setTimeout(() => {
+            // Change back to the clipboard icon after 1 second
+            $icon.removeClass("fi-bs-check").addClass("fi-rs-clipboard");
+        }, 1000);
+    });
+
+    /**
+     * Renders chat blocks and default messages.
+     * @param {Array<Chat>} [chats=null] - Optional parameter containing chat data. If not provided, fetches chats from the ChatsInterface.
+     * @returns {Promise}
+     */
+    async function renderChats(chats = null) {
+        try {
+            // Fetch chats if not provided
+            if (!chats) {
+                chats = await ChatsI.getAll();
+            }
+
+            // Validate the structure of chats
+            if (!Array.isArray(chats)) {
+                console.log(chats);
+                throw new Error("Argument 'chats' should be an array.");
+            }
+
+            const expectedKeys = ["id", "contents", "title", "username"];
+
+            // Check for expected keys in each chat object
+            for (const chat of chats) {
+                if (!expectedKeys.every(key => key in chat)) {
+                    throw new Error("Unexpected argument 'chats'. Some elements are missing.");
+                }
+            }
+
+            // Cache the fetched chats
+            chatsInstances = chats;
+
+            let chatsHtml = "";
+
+            // Generate HTML for each chat block
+            for (const chat of chats) {
+                chatsHtml += /* html */ `
+                    <div class="h_chatBlock" data-chat-id="${chat.id}">
+                        <i class="fi fi-rr-messages h_chatIcon"></i>
+                        <div class="h_chatTitle">${chat.title}</div>
+                    </div>
+                `;
+            }
+
+            // Render the chat blocks
+            $(".chatHistory").html(chatsHtml);
+
+            $(".chatMessages").html(defaultMessageContainer);
+        } catch (error) {
+            console.error(error);
+        }
     }
-    function GenerateHtml(content, isChatContent = false) {
-        let html;
-        let updatedContent = "";
-        let mdConverter = new showdown.Converter();
 
-        updatedContent = mdConverter.makeHtml(content);
+    /**
+     * Renders chat contents based on chat ID.
+     * @param {number} chatId - The ID of the chat.
+     * @returns {void}
+     */
+    function renderChatContents(chatId) {
+        currentChatId = chatId;
+        const chat = selectChatById(currentChatId);
 
-        if (!isChatContent) {
-            html = /*html*/`
+        let contentsHtml = "";
+
+        // Generate HTML for each message block in the chat
+        for (const content of chat.contents) {
+            contentsHtml += /* html */ `
             <div class="messageBlockWrapper">
                 <div class="messageBlock">
                     <div class="roleIconContainer">
                         <img class="roleIcon" src="/scheduler/assets/images/User Icon.png">
                     </div>
-                    <div class="cm_contentContainer">
-                        ${content}
-                    </div>
+                    <div class="cm_contentContainer">${content.message}</div>
                 </div>
             </div>
         `;
-        }
-        else {
-            html = /*html*/`
+
+            // Process markdown content and generate HTML
+            const mdConverter = new showdown.Converter();
+            const updatedResponse = mdConverter.makeHtml(content.response);
+
+            const $cm_contentContainer = $(/* html */`
+                <div class="cm_contentContainer">${updatedResponse}</div>
+            `);
+
+            // Update code blocks with language and copy functionality
+            $cm_contentContainer.find("pre code").each(function () {
+                const classes = $(this).attr("class");
+                let langName = classes.split(" ")[0];
+                const codeTopH = /* html */ `
+                <div class="codeTop">
+                    <div class="m_codeLangName">${langName}</div>
+                    <div class="m_codeCopyContainer">
+                        <i class="fi fi-rs-clipboard m_copyCodeIcon"></i>
+                        <span>Copy code</span>
+                    </div>
+                </div>
+            `;
+                $(this).closest("pre").prepend(codeTopH);
+            });
+
+            contentsHtml += /* html */ `
             <div class="messageBlockWrapper m_chatGpt_wrapper">
                 <div class="messageBlock">
                     <div class="roleIconContainer">
                         <img class="roleIcon" src="/scheduler/assets/images/Gpt Icon.png">
                     </div>
-                    <div class="cm_contentContainer">
-                        ${updatedContent}
-                    </div>
+                    ${$cm_contentContainer[0].outerHTML}
                 </div>
             </div>
         `;
         }
-        return html;
+
+        // Render the chat messages
+        $(".chatMessages").html(contentsHtml);
     }
-}
+
+    /**
+     * Selects a chat by ID from cached chat instances.
+     * @param {number} chatId - The ID of the chat.
+     * @returns {Chat|null} - The chat object if found, otherwise null.
+     */
+    function selectChatById(chatId) {
+        const chat = chatsInstances.find(chat => chat.id == chatId);
+        return chat || null;
+    }
+
+    /**
+     * Renders a loader in the chatMessages element.
+     * @returns {void}
+     */
+    function renderLoader(message) {
+        //Add the temporary user's message and a loader till prompt gets a response.
+        const loaderHtmlTemplate = /* html */ `
+        <div class="messageBlockWrapper">
+            <div class="messageBlock">
+                <div class="roleIconContainer">
+                    <img class="roleIcon" src="/scheduler/assets/images/User Icon.png">
+                </div>
+                <div class="cm_contentContainer">${message}</div>
+            </div>
+        </div>
+        <div class="messageBlockWrapper m_chatGpt_wrapper">
+            <div class="messageBlock">
+                <div class="roleIconContainer">
+                    <img class="roleIcon" src="/scheduler/assets/images/Gpt Icon.png">
+                </div>
+                <div class="cm_contentContainer"><div class="response-loader"><div></div><div></div><div></div></div></div>
+            </div>
+        </div>
+        `
+        $(".defaultMessageContainer").remove();
+        $(".chatMessages").append(loaderHtmlTemplate);
+    }
+
+    /**
+     * Removes the loader from the chatMessages element.
+     * @returns {void}
+     */
+    function unrenderLoader() {
+        $("#loader").remove();
+    }
+});
