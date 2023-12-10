@@ -22,6 +22,7 @@ a{
     text-decoration: none;
     color: var(--default-link-color);
     transition: color 0.4s ease;
+    cursor: pointer;
 }
 a:hover{
     color: var(--accent-color);
