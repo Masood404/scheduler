@@ -76,6 +76,7 @@
                     $chats[$chatId] = [
                         'id' => $chatId,
                         'username' => $row['username'],
+                        'title' => $row['title'],
                         'contents' => [],
                     ];
                 }
@@ -89,10 +90,6 @@
                         'chatId' => $row['chatId']                
                     ];
                 }
-            }
-            
-            if(empty($chats)){
-                throw new Exception("No matching resource found in the database for the provided parameters.");
             }
 
             // Return the array of chats (indexed numerically)
