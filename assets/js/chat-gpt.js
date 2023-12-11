@@ -198,17 +198,27 @@ $(async () => {
         }
     })
 
-    // Input event for adjusting textarea height
+    // Attach input event listener to the textarea element with id "sendMessageText"
     $("#sendMessageText").on("input", function () {
-        if (parseInt($(this)[0].scrollHeight / parseFloat(getComputedStyle($(this)[0]).lineHeight)) > 10) {
+        // Calculate the number of lines in the textarea, is a function return due to DOM update.
+        const numLines = () => parseInt($(this)[0].scrollHeight / parseFloat(getComputedStyle($(this)[0]).lineHeight));
+
+
+        // Check if there are more than 10 lines
+        if (numLines() > 10) {
+            // Add the "scrollable" class to the textarea
             $(this).addClass("scrollable");
+            $(this).attr("rows", 10);
         }
         else {
+            // Remove the "scrollable" class from the textarea
             $(this).removeClass("scrollable")
+            // Adjust the number of rows in the textarea to fit the content
             $(this).attr("rows", 1);
-            $(this).attr("rows", parseInt($(this)[0].scrollHeight / parseFloat(getComputedStyle($(this)[0]).lineHeight)));
+            $(this).attr("rows", numLines());
         }
     });
+
 
     // Click event for copying code to clipboard
     $(".chatMessages").on("click", ".m_codeCopyContainer", function () {
@@ -296,13 +306,16 @@ $(async () => {
 
         // Generate HTML for each message block in the chat
         for (const content of chat.contents) {
+            //Convert the line breaks intp the br tag.
+            const updatedMessage = content.message.replace(/(\r\n|\r|\n)/g, "<br>");
+
             contentsHtml += /* html */ `
             <div class="messageBlockWrapper">
                 <div class="messageBlock">
                     <div class="roleIconContainer">
                         <img class="roleIcon" src="/scheduler/assets/images/User Icon.png">
                     </div>
-                    <div class="cm_contentContainer">${content.message}</div>
+                    <div class="cm_contentContainer" style="white-space:pre-wrap;">${updatedMessage}</div>
                 </div>
             </div>
         `;
