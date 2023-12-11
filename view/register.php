@@ -1,15 +1,11 @@
 <?php
     require_once realpath(__DIR__."/../includes/index.php");
 
-    $jsEncryptJs = path_to_url(__NODE_MODULES__)."/jsencrypt/bin/jsencrypt.js";
-    $cryptoJs = path_to_url(__NODE_MODULES__)."/crypto-js/crypto-js.js";
     $userJs = path_to_url(__JS__)."/User.js";
 
     $html = <<<HTML
         <title>Register</title>
 
-        <script src="$jsEncryptJs"></script>
-        <script src="$cryptoJs"></script>
         <script src="$userJs"></script>
 
         <style>

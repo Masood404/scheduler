@@ -1,13 +1,10 @@
 <?php
     require_once realpath(__DIR__."/../includes/index.php");
-
-    $jsEncryptJs = path_to_url(__NODE_MODULES__)."/jsencrypt/bin/jsencrypt.js";
     $userJs = path_to_url(__JS__)."/User.js";
 
     $html = <<<HTML
         <title>Login</title>
 
-        <script src="$jsEncryptJs"></script>
         <script src="$userJs"></script>
 
         <style>
