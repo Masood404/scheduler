@@ -1,5 +1,5 @@
 /*
-    Make sure to also include the libraries CryptoJS and JSEncrypt in the document using script tags.
+    Make sure to also include the libraries CryptoJS and JSEncrypt using php.
 */
 
 const User = {

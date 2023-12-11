@@ -36,6 +36,9 @@
     elseif($requestURI == path_to_uri(__JS__)."/main.js"){
         require_once __JS__.DIR_S."main.php";
     }
+    elseif($requestURI == path_to_uri(__JS__)."/User.js"){
+        require_once __JS__.DIR_S."User.php";
+    }
     elseif(!$pageFound) {
         require_once "404.php";
     }
