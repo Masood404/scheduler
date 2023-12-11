@@ -1,6 +1,7 @@
 <?php
     //Dependecies
-    require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "includes" . DIRECTORY_SEPARATOR . "index.php";
+    require_once realpath(__DIR__."/../includes/view_init.php");
+    
     $css = path_to_url(__CSS__) . "/weather.css";
     $js = path_to_url(__JS__) . "/weather.js";
 

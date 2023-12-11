@@ -1,5 +1,5 @@
 <?php
-    require_once realpath(__DIR__."/../includes/index.php");
+    require_once realpath(__DIR__."/../includes/view_init.php");
     $userJs = path_to_url(__JS__)."/User.js";
 
     $html = <<<HTML

@@ -1,5 +1,5 @@
 <?php 
-    require_once realpath(__DIR__."/../includes/index.php");
+    require_once realpath(__DIR__."/../includes/view_init.php");
 
     $head = <<<HTML
         <title>Home</title>

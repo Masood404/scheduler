@@ -1,6 +1,6 @@
 <?php
     //Dependecies
-    require_once realpath(__DIR__."/../includes/index.php");
+    require_once realpath(__DIR__."/../includes/view_init.php");
 
     $css = path_to_url(__CSS__) . "/chat-gpt.css";
     $showdownJs = path_to_url(__NODE_MODULES__) . "/showdown/dist/showdown.js";
