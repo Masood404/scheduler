@@ -138,11 +138,17 @@ $(async () => {
     await renderChats();
 
     let isChecked = false;
-    const chatSelection = $("#chat_selection");
-    const chatSelectionBox = $("#chat_selection_box");
+    const $newChatButton = $(".newChatButtonWrapper button");
+    const $chatSelection = $("#chat_selection");
+    const $chatSelectionBox = $("#chat_selection_box");
 
-    chatSelection.click(() => {
-        isChecked = chatSelectionBox.is(":checked");
+    $newChatButton.click(() => {
+        //Render the default chat messages.
+        renderChatContents(null);
+    })
+
+    $chatSelection.click(() => {
+        isChecked = $chatSelectionBox.is(":checked");
         if (!isChecked) {
             $(".h_chatBlock").removeClass("h_isSelected");
         }
@@ -272,11 +278,18 @@ $(async () => {
 
     /**
      * Renders chat contents based on chat ID.
-     * @param {number} chatId - The ID of the chat.
+     * @param {number|null} chatId - The ID of the chat. On null will render the default message.
      * @returns {void}
      */
-    function renderChatContents(chatId) {
+    function renderChatContents(chatId = null) {
         currentChatId = chatId;
+
+        if (currentChatId == null) {
+            $(".chatMessages").html(defaultMessageContainer);
+            //Break the execution of the rest of the code.
+            return;
+        }
+
         const chat = selectChatById(currentChatId);
 
         let contentsHtml = "";
