@@ -1,0 +1,4 @@
+# Disable directory browsing
+Options -Indexes
+# Deny access to all files in this directory
+Deny from all
