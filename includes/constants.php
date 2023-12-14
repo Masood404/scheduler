@@ -17,29 +17,48 @@
     */
 
     /**
-     * The getenv('XAMPP_PATH') checks for the path to xampp but for any other reason:
-     * Change the default xampp path due to different operating system, for example:
-     ** Linux --> /opt/lampp/htdocs
+     * The path to the configuratin dirctory which contains config files such as enviormental variables or system paths.
+     * Should be set to the path of scheduler-config.php/config.php
+     */
+    define("__CONFIG__", file_get_contents(realpath(__DIR__.DIR_S."setup".DIR_S."config-path.txt")));
+
+    /**
+     * @var mixed[] This contains all the project's enviormental variables.
+     */
+    define("MY_CONFIG", require(__CONFIG__ . DIR_S . "config.php"));
+
+    /**
+     * The xampp and the server root paths vary based on the operating systems and certain other conditions.
+     * For further problems you can always get the contanct informations on the README file or https://github.com/Masood404/scheduler.
+     * 
+     * ***Note***
+     * Do not change this directly from here, should be changed from the config file.
+     * 
+     * The default xampp path due to different operating system, for example:
+     ** Linux --> /opt/lampp
      ** Mac --> /Applications/XAMPP
      ** Windows --> C:\\xampp
      */
-    define("__XAMPP__", getenv("XAMPP_PATH") ?: /* change this if any error occurs ----> */ "C:\\xampp");
+    define("__XAMPP__", MY_CONFIG["XAMPP"]);
 
     /**
-     * The path to the configuratin dirctory which contains config files such as enviormental variables.
-     */
-    define("__CONFIG__", __XAMPP__ . DIR_S . ".config");
-
-    /**
-    * To find the server root file look for a directory called htdocs inside your xampp or web server. 
+    * The server root directory
+    *
+    * ***Note***
+    * Do not change this directly from here, should be changed from the config file.
+    *
+    * By default it is:
+    ** Linux --> /opt/lampp/htdocs
+    ** Mac --> /Application/XAMPP/htocs
+    ** Windows --> C:\\xampp\htdocs
     */
-    define("__SERVER_ROOT__", __XAMPP__ . DIR_S . "htdocs");
+    define("__SERVER_ROOT__", MY_CONFIG["Web_Root"]);
     
     /**
      * You can change this directory to the path towards this project if the project folder is not in a subfolder of the server root,
      * only have the server root for this constant
      */
-    define("__PROJECT__", __SERVER_ROOT__ . DIR_S . "scheduler");   
+    define("__PROJECT__", realpath(__DIR__."/.."));   
     
     define("__ASSETS__", __PROJECT__  . DIR_S . "assets");
     define("__CSS__", __ASSETS__ . DIR_S . "css");
@@ -57,11 +76,6 @@
     define("__SCRIPTS__", __INCLUDES__ . DIR_S . "scripts");
  
     #endregion
-
-    /**
-     * @var mixed[] This contains all the project's enviormental variables.
-     */
-    define("MY_CONFIG", require(__CONFIG__ . DIR_S . "config.php"));
 
     #region url paths
 
@@ -123,4 +137,5 @@
     function path_to_uri($path){
         return str_replace(DIR_S, "/", str_replace(__SERVER_ROOT__, "", $path));
     }
+
 ?>
