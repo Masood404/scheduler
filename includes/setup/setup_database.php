@@ -1,4 +1,9 @@
 <?php
+    /*
+        WARNING!
+        Do not run this file as it will truncate the database.
+    */
+
     require_once realpath(__DIR__."/../DBConn.php");
 
     //Get the connection from the interface.
@@ -30,6 +35,7 @@
     `endTime` int(11) NOT NULL,
     `title` text NOT NULL,
     `completed` tinyint(1) NOT NULL DEFAULT 0,
+    `username` varchar(32) NOT NULL,
     PRIMARY KEY (`id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
     SQL;
