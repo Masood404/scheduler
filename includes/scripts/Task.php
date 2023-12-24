@@ -73,7 +73,20 @@
 
             // Include the object's id in the insert query if its not null.
             $DBConn->executeQuery($query, [$this->username, $this->id, $this->title, $this->startTime, $this->endTime, $this->completed]);
-        }       
+        }   
+        /**
+         * Get the current task object in associative array.
+         */   
+        public function getAssoc(){
+            return [
+                "username" => $this->username,
+                "id" => $this->id,
+                "title" => $this->title,
+                "startTime" => $this->startTime,
+                "endTime" => $this->endTime,
+                "completed" => $this->completed
+            ];
+        }  
         /**
          * Represents a method to check if the task's time is not overlapping with other tasks in the database.
          */
@@ -98,11 +111,11 @@
         /**
          * Get the element by the username and id.
          * @param string $username
-         * @param int|null $id
+         * @param int $id
          * 
          * @return Task|NoTaskFoundException Returns the Task object on success, throws NoTaskFound exception on no object being found.
          */
-        public static function getTaskById(string $username, int $id = null) : Task|NoTaskFoundException{
+        public static function getTaskById(string $username, int $id) : Task|NoTaskFoundException{
             $DBConn = DBConn::getInstance();
 
             // Query to run, it also checks if id is null.
@@ -113,7 +126,7 @@
             SQL;    
 
             try{
-                $result = $DBConn->executeQuery($query, is_null($id) ? $username: [$username, $id]);
+                $result = $DBConn->executeQuery($query, [$username, $id]);
                 $result = $result->fetch_assoc();
             }
             catch(Exception $e){
@@ -128,9 +141,10 @@
         }
 
         /**
-         * @return Task[] All the task objects from the database.
+         * @param bool $assoc Specify wether the returned task's be in associative array.
+         * @return Task[]|array All the task objects from the database.
          */
-        public static function getAll(string $username) : array{
+        public static function getAll(string $username, bool $assoc = false) : array{
             $DBConn = DBConn::getInstance();
 
             $query = 
@@ -149,9 +163,14 @@
 
             $tasks = [];
 
-            // Iterate through result to convert type to Task.
-            foreach($result as $task){
-                array_push($tasks, new self($task["username"], $task["id"], $task["title"], $task["startTime"], $task["endTime"], $task["completed"]));
+            if($assoc){
+                $tasks = $result;
+            }
+            else{
+                // Iterate through result to convert type to Task.
+                foreach($result as $task){
+                    array_push($tasks, new self($task["username"], $task["id"], $task["title"], $task["startTime"], $task["endTime"], $task["completed"]));
+                }
             }
 
             return $tasks;
