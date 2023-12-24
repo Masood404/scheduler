@@ -176,6 +176,39 @@
             return $tasks;
 
         }
+        /**
+         * @param int[] $ids Array of int which represents task ids.
+         */
+        public static function deleteByIds(string $username, array $ids){
+            $DBConn = DBConn::getInstance();
+
+            // Construct the base SQL query
+            $query = 
+            <<<SQL
+            DELETE FROM tasks
+            WHERE tasks.username = ? AND tasks.id IN (
+            SQL;
+
+            // Validate and further finish constructing the SQL query
+            for ($i = 0; $i < count($ids) - 1; $i++) {
+                if (!is_int($ids[$i])) {
+                    throw new InvalidArgumentException('Parameter ids for tasks is expected to have elements of integer for method ChatsDbManager::deleteChats()');
+                }
+                $query .= "?, ";
+            }
+            $query .= "?);";
+
+            try {
+                // Execute the delete query with prepared statement
+                $DBConn->executeQuery($query, [$username, ...$ids]);
+            } catch (mysqli_sql_exception $e) {
+                // Handle specific database-related exceptions
+                throw new Exception("Database error: " . $e->getMessage());
+            } catch (Exception $e) {
+                // General error handling
+                throw new Exception("Failed executing deleting multiple tasks from the db: " . $e->getMessage());
+            }
+        }
 
     }
     class NoTaskFoundException extends Exception{
