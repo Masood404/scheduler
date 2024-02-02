@@ -7,6 +7,18 @@ function logout() {
 }
 
 /**
+ * This function sets the authorization header.
+ * Will result in an error if the authorization is not set in the storage so make sure to use the isLogged variable.
+ */
+function setAuthorizationHeader() {
+    $.ajaxSetup({
+        beforeSend: (xhr) => {
+            xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem("authToken"));
+        }
+    });
+};
+
+/**
  * Refresh the authorization token that is stored in localstorage.
  * @returns {Promise<void>} does not resolve in to anything just check for success or failure.
  */
