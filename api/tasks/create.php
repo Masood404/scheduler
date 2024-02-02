@@ -17,15 +17,12 @@
     // Extract the username
     $username = $authorizationResult["usr"];
 
-    // Extract the request from json format to assoc.
-    $REQ = json_decode($REQ, true);
-
-    if(!isset($REQ["task"])){
-        print_r($REQ);
+    if(!isset($_POST["task"])){
+        print_r($_POST);
         sendErrorResponse("Required field task is missing in the request");
     }
 
-    $task = $REQ["task"];
+    $task = $_POST["task"];
 
     if(gettype($task) != "array"){
         sendErrorResponse("The field task is expected to be of type json, ".gettype($task)." given.");
