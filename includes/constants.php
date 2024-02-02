@@ -82,7 +82,7 @@
     /**
      * The public root name of the server in the url or also known as host name, if your are in local development its probably 'localhost'
      */
-    define("HTTP_HOST", "localhost");
+    define("HTTP_HOST", $_SERVER["SERVER_NAME"]);
 
     $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
     $protocol = $isSecure ? "https://" : "http://";
