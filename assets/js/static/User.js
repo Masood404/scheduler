@@ -245,35 +245,68 @@ const User = {
             navigator.serviceWorker.register(serviceWorkerUrl);
         },
         /**
+         * Subscribe the user for push notifications.
+         * The subscription is encrypted using a generated aesKey after the user allows for subscription through the requestSubscription() method.
+         * Then the the aes key is encrypted with a public rsa key.
+         * After all this the encrypted subscription and aes key is sent to the backend.
+         */
+        async subscribe() {
+            try {
+                // Generate a new aes key
+                let aesKey = User.crypto.generateAESKey();
+                // Get the user's subscriptions
+                let subscription = await User.notifManager.requestSubscription();
+
+                // Parse the subscription to string
+                subscription = JSON.stringify(subscription.toJSON());
+
+                // Encrypt the subscription with aes
+                subscription = User.crypto.encryptWithAES(subscription, aesKey);
+
+                // Encrypt the aes key to send to backend
+                aesKey = await User.crypto.encrypt(aesKey);
+
+                // Send to backend
+                setAuthorizationHeader();
+                const response = await $.ajax({
+                    type: "POST",
+                    url: `${__project_url__}/api/users/subscribe.php`,
+                    data: {
+                        aesKey: aesKey,
+                        subscription: subscription
+                    }
+                });
+            }
+            catch (error) {
+                console.error(error);
+                alert(error);
+            }
+        },
+        /**
          * Request subscription from the user.
          * @returns {Promise<subscription>} A promise that resolves into subscription string.
          */
         async requestSubscription() {
-            try {
-                const permission = await Notification.requestPermission();
-
-                if (permission === "granted") {
-                    //Get the service worker
-                    const serviceWorker = await navigator.serviceWorker.ready;
-                    const publicVapidKey = await this.requestPublicVapid();
-                    const subscription = await serviceWorker.pushManager.subscribe({
-                        userVisibleOnly: true,
-                        applicationServerKey: publicVapidKey
-                    });
-
-                    return subscription;
-                }
-                else {
-                    throw "Permission not granted for subscription";
-                }
-            } catch (error) {
-                if (error === "Permission not granted for subscription") {
-                    throw error;
-                }
-                else {
-                    throw "Error requesting subscription: " + error;
-                }
+            if (!"Notification" in window) {
+                throw "Push Notification not supported";
             }
+            const permission = await Notification.requestPermission();
+
+            if (permission === "granted") {
+                //Get the service worker
+                const serviceWorker = await navigator.serviceWorker.ready;
+                const publicVapidKey = await this.requestPublicVapid();
+                const subscription = await serviceWorker.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: publicVapidKey
+                });
+
+                return subscription;
+            }
+            else {
+                throw "Permission not granted for subscription";
+            }
+
         },
         /**
          * Request the public VAPID keys from the backend.
