@@ -311,10 +311,18 @@
     echo "Setting database...\n";
 
     try {
-        require "setup_database.php";
+        require __DIR__.DIRECTORY_SEPARATOR."setup_database.php";
     } 
     catch (Exception $e) {
-        die("Failed setting the database, Datase Error: ".$e->getMessage());
+        die("Failed setting the database, Databse Error: ".$e->getMessage());
+    }
+
+    echo "Enabling the cronjob...\n";
+    try{
+        require __DIR__.DIRECTORY_SEPARATOR."enableCron.php";
+    }
+    catch (Exception $e){
+        die("Failed enabling the cronjob used for scheduling notifications, Error: ".$e->getMessage());
     }
 
     echo 
