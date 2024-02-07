@@ -41,8 +41,8 @@
                     return $responseContent;
                 }
                 else{
-                    $error = json_encode($requestParams);
-                    throw new Exception("Unexpected response format from the external API, request paramsPayload: $error");
+                    $error = json_encode($response);
+                    throw new Exception("Unexpected response format from the external API, Open Ai: $error");
                 }
             }
             catch(Exception $e){
