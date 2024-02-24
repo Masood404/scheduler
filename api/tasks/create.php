@@ -36,7 +36,6 @@
     try{
         // Construct a new Task object.
         $taskObj = new Task($username, null, $task["title"], $task["startTime"], $task["endTime"]);
-    
         // Add the Task object's record to the database.
         $taskObj->add();
 
@@ -44,7 +43,5 @@
         echo json_encode($taskObj->getAssoc());
     }
     catch (Exception $e){
-        sendErrorResponse($e->getMessage(), 500);
+        sendErrorResponse($e->getMessage());
     }
-
-?>
