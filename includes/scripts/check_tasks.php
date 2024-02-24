@@ -34,7 +34,6 @@ $result = $DBConn->executeQuery($query, [$dummyCurrTime, $dummyCurrTime])->fetch
 
 // Run a loop for all the users when their task is started
 foreach($result as $usersTask){
-    
     try{
         // VAPID authentication
         $auth = [
@@ -58,9 +57,12 @@ foreach($result as $usersTask){
             "icon" => "http://localhost/scheduler/assets/images/Gpt Icon.png"
         ]);
 
+        // Get the subscription.
+        $subscription = Users::getSubscription($usersTask["username"]);
+
         //executing a single push notification to the subscription 
         $webPush->sendOneNotification(
-            Users::getSubscription($usersTask["username"]),
+            $subscription,
             $payload,
             /*
                 Time To Live (TTL, in seconds) is how long a push message is retained by the push service (eg. Mozilla) in case
@@ -72,13 +74,15 @@ foreach($result as $usersTask){
             */
             ["TTL" => 5000]
         );
-
     }
     catch(SubscriptionNotFoundException $e){
         // When no subscription is found stop the execution the rest of the script.
         die();
     }
-    
+    catch(Exception $e){
+        // Log the exception 
+        php_error_log($e->getMessage());
+    }
 }
 #endregion
 

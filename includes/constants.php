@@ -138,4 +138,13 @@
         return str_replace(DIR_S, "/", str_replace(__SERVER_ROOT__, "", $path));
     }
 
-?>
+    /**
+     * Logs an error message with its time to the file 'php_errors.log'.
+     * @param string $message The message to log.
+     */
+    function php_error_log(string $message){
+        $time = (new DateTime('now'))->format('d/m/y h:i:s');
+        $errorMessage = "($time): $message";
+
+        error_log($errorMessage, 3, __DIR__.DIR_S.'php_errors.log');
+    }
