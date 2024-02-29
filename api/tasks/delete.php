@@ -12,15 +12,22 @@
     if(isset($authorizationResult["error"])){
         sendErrorResponse($authorizationResult["error"], 401);
     }
+    // Check request method.
+    if($_SERVER['REQUEST_METHOD'] !== 'DELETE'){
+        sendErrorResponse('Bad Request Method: Only DELETE requests are allowed', 405);
+    }
+
+    $_DELETE = file_get_contents('php://input');
+    $_DELETE = json_decode($_DELETE, true);
 
     // Extract the username 
     $username = $authorizationResult["usr"];
 
-    if(!isset($_GET["ids"])){
-        sendErrorResponse("Required field ids for tasks is missing in the request");
+    if(!isset($_DELETE["ids"])){
+        sendErrorResponse("Required field ids for tasks is missing in the request:");
     }
 
-    $taskIds = json_decode($_GET["ids"], true);
+    $taskIds = $_DELETE['ids'];
     if(!$taskIds || $taskIds == null){
         sendErrorResponse("Field ids for tasks is expected formatted as a JSON array");
     }
