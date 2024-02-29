@@ -14,7 +14,7 @@ use Minishlink\WebPush\WebPush;
 $DBConn = DBConn::getInstance();
 
 // DateTime variable which holds the current time
-$dummyCurrTime = (new DateTime("now"))->getTimestamp();
+$currentTime = (new DateTime("now"))->getTimestamp();
 
 #region Send a push notification to the user's subscription.
 // Query checks if the next task's startTime falls within one minute of the current time
@@ -30,7 +30,7 @@ ORDER BY tasks.startTime ASC;
 SQL;
 
 // Execute query with parameters bind, fetch the result as associative array.
-$result = $DBConn->executeQuery($query, [$dummyCurrTime, $dummyCurrTime])->fetch_all(MYSQLI_ASSOC);
+$result = $DBConn->executeQuery($query, [$currentTime, $currentTime])->fetch_all(MYSQLI_ASSOC);
 
 // Run a loop for all the users when their task is started
 foreach($result as $usersTask){
@@ -97,5 +97,5 @@ WHERE tasks.endTime < (? - 60 * 10);
 SQL;
 
 // Execute the query 
-$DBConn->executeQuery($query, $dummyCurrTime);
+$DBConn->executeQuery($query, $currentTime);
 #endregion
