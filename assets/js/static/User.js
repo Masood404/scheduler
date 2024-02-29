@@ -81,7 +81,7 @@ const User = {
      */
     async login(username, password, remember = false) {
         try {
-            if (localStorage.getItem("authToken")) {
+            if (isLogged) {
                 throw "User already logged in!";
             }
             if (!this.validateUsername(username)) {
@@ -237,13 +237,6 @@ const User = {
      * The Notification manager
      */
     notifManager: {
-        /** 
-         * Register Service worker
-         * @param {string} serviceWorkerUrl - The URL path to the file of the service worker
-         */
-        registerSw(serviceWorkerUrl) {
-            navigator.serviceWorker.register(serviceWorkerUrl);
-        },
         /**
          * Subscribe the user for push notifications.
          * The subscription is encrypted using a generated aesKey after the user allows for subscription through the requestSubscription() method.
@@ -254,6 +247,7 @@ const User = {
             try {
                 // Generate a new aes key
                 let aesKey = User.crypto.generateAESKey();
+
                 // Get the user's subscriptions
                 let subscription = await User.notifManager.requestSubscription();
 
