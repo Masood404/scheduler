@@ -25,8 +25,8 @@ Please note that API keys are required to use the Weather API and OpenAI GPT, bu
 Before running the application, ensure you have the following installed:
 
 - [XAMPP](https://www.apachefriends.org/)
-
 - [Git](https://git-scm.com/downloads)
+- [Windows Subsystem for Linux (WSL)](https://ubuntu.com/desktop/wsl) - Required for Windows users to run the application seamlessly.
 
 ## 🚀🚀 Getting Started 🚀🚀
 
