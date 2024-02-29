@@ -7,6 +7,3 @@
     $staticStyle = file_get_contents(realpath(__DIR__."/static/style.css"));
 
     echo $dynamicStyle.$staticStyle;
-?>
-
-

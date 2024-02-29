@@ -115,6 +115,63 @@
 
             return $exists;
         }
+        public static function subscribe(string $username, array|string $subscription) : Minishlink\WebPush\Subscription{
+            $_DBConn = DBConn::getInstance();
+
+            if(gettype($subscription) == "string"){
+                // Automatically convert json formatted string to associative array for the subscription object.
+                $subscription = json_decode($subscription, true);
+
+                if(!$subscription || $subscription == null){
+                    throw new InvalidArgumentException("Argument subscription is not formatted in json");
+                }
+            }
+
+            // Create a subscription object and it will also test for the subscription's validty.
+            $subscriptionObj = Subscription::create($subscription);
+            // If invalid will throw error.
+        
+            // Query to update the user's subscription record.
+            $query = 
+            <<<SQL
+            UPDATE users
+            SET subscription = ?
+            WHERE username = ?;
+            SQL;
+
+            $_DBConn->executeQuery($query, [$subscription, $username]);
+
+            return $subscriptionObj;
+        }
+        /**
+         * Get a user's subscription from the database converted to the Subscription object.
+         * @throws SubscriptionNotFoundException Will throw this Exception if no subscription were found in the databse.
+         */
+        public static function getSubscription(string $username) : Minishlink\WebPush\Subscription{
+            $_DBConn = DBConn::getInstance();
+
+            // Query to retrive the user's subscription.
+            $query =
+            <<<SQL
+            SELECT subscription FROM users
+            WHERE username = ?;
+            SQL;
+
+            // Execute and fetch subscrption.
+            $subscription = $_DBConn->executeQuery($query, $username)->fetch_assoc()["subscription"];
+            $subscription = json_decode($subscription, true);
+
+            // Check if the returned subscription is null, means the user have not subscribed.
+            if($subscription == null){
+                // Achknowledge and terminate.
+                throw new SubscriptionNotFoundException();
+            }
+
+            // Construct the subscription object.
+            $subscriptionObj = Subscription::create($subscription);
+
+            return $subscriptionObj;
+        }
         /**
          * @return string An Authorization token
          */
@@ -375,6 +432,14 @@
             return $randomString;
         }
 
+    }
+
+    class SubscriptionNotFoundException extends Exception{
+        public function __construct(string|null $message = null, int $code = 0, Throwable|null $previous = null) {
+            $message = $message == null ? "No subscription found for the user in the database" : $message;
+
+            parent::__construct($message, $code, $previous);
+        }
     }
 
 ?>

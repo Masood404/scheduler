@@ -1,4 +1,408 @@
-section{
+body {
     display: flex;
-    column-gap: 2em;
+    flex-direction: column;
+    height: 100vh;
 }
+
+main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+aside {
+    width: 20em;
+    padding: 1em 0.5em;
+}
+
+section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+#calendar-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--primary-color);
+}
+
+.cal-arrows {
+    display: block;
+    cursor: pointer;
+}
+
+.cal-animate-arrows {
+    --animation-time: 0.2s;
+    animation: dynamic-pulse 0.2s forwards;
+}
+
+#cal-monthYyear {
+    font-size: 1.5em;
+    text-align: center;
+}
+
+#calendar>ul {
+    list-style-type: none;
+    padding-inline-start: 0;
+}
+
+#calendar>ul,
+#calendar-top {
+    margin: 0;
+    padding: 0.5em 0.5em;
+}
+
+#calendar-weeks {
+    display: flex;
+    text-align: center;
+    background-color: var(--secondary-color);
+}
+
+#calendar-weeks>li {
+    flex: 1;
+}
+
+#calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background-color: var(--default-bg-color);
+}
+
+#calendar-days>li {
+    flex: 1;
+    text-align: center;
+    padding: 0.5em 0.5em;
+    cursor: pointer;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+}
+
+.cal-inactive-dates {
+    opacity: 0.5;
+}
+
+#cal-selected-date {
+    background-color: var(--default-link-color);
+    animation: dynamic-pulse 0.2s forwards;
+}
+
+#hours-top {
+    height: 100%;
+    overflow: hidden;
+    padding: 1em 3em;
+    align-items: center;
+    display: flex;
+    justify-items: center;
+    column-gap: 1em;
+}
+
+#current-dayYdate{
+    text-align: center;
+}
+#current-day {
+    color: var(--default-link-color);
+    grid-row: 1;
+}
+#current-date {
+    padding: 0.5em;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    font-size: 1.5em;
+}
+#current-month {
+    font-size: 2em;
+    margin-top: 16px;
+    flex: 2;
+}
+
+#hours {
+    overflow-y: scroll;
+    position: relative;
+}
+
+.hours-right-in {
+    --animation-time: 0.4s;
+    animation: right-fade-in var(--animation-time) forwards;
+}
+
+.hours-left-in {
+    --animation-time: 0.4s;
+    animation: left-fade-in var(--animation-time) forwards;
+}
+
+.hour {
+    display: flex;
+}
+
+.hour>span {
+    font-size: 14px;
+    width: 3em;
+    text-align: end;
+}
+
+.hour>div {
+    flex: 1;
+    border-style: solid;
+    border-width: 0 0 0 2px;
+    margin-left: 0.5em;
+}
+
+.hour [data-quarter] {
+    padding: 0.5em 0;
+}
+
+.hour [data-quarter=0]>hr {
+    background-color: white;
+    color: white;
+}
+
+.hour hr {
+    margin: 0;
+    border: none;
+    height: 2px;
+    background-color: rgba(255, 255, 255, 0.7);
+}
+#task-inputs-toggles{
+    flex: 2;
+    display: inline-flex;
+    justify-content: center;
+    gap: 10px;
+}
+#hours-top i{
+    color: var(--default-bg-color);
+    display: block;
+    font-size: 2em;
+    background-color: var(--default-text-color);
+    border-radius: 50%;
+    border-style: solid;
+    border-width: 3px;
+    border-color: var(--default-text-color);
+    cursor: pointer;
+
+    transition: color 0.2s ease;
+}
+#hours-top i:hover{
+    color: var(--default-link-color);
+}
+#task-inputs {
+    width: 40%;
+    grid-row: 1/3;
+    display: inline-grid;
+    text-align: center;
+    margin: 0;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(50px) scale(0.7);
+
+    transition: all 0.2s;
+    transition-timing-function: cubic-bezier(0.4, 0.4, 0.2, 2);
+}
+
+.task-inputs-on {
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: translateY(0) scale(1) !important;
+}
+
+#task-inputs fieldset {
+    grid-row: 2;
+    display: inline-grid;
+    column-gap: 1em;
+}
+
+#task-inputs fieldset label {
+    grid-row: 1;
+}
+
+#task-inputs label,
+#task-inputs input {
+    display: block;
+    width: 100%;
+}
+#task-inputs input{
+    color: var(--default-text-color);
+    background-color: transparent;
+    border-style: solid;
+    border-color: var(--default-text-color);
+    border-width: 1px;
+
+    transition: background-color 0.2s ease;
+}
+#task-inputs input:hover, 
+#task-inputs input:focus-visible{
+    background-color: var(--accent-color);
+    outline: none;
+}
+#task-inputs fieldset{
+    border-color: var(--default-text-color);
+    border-width: 1px;
+}
+#task-title-container {
+    grid-column: 1/3;
+    text-align: center;
+}
+#task-title{
+    text-align: center;
+}
+
+#task-boxes-container{
+    position: relative;
+}
+
+#selected-quarter hr{
+    background-color: var(--default-link-color);
+}
+[data-current-quarter] hr{
+    background-color: red;
+}
+
+.task-box{
+    display: flex;
+    position: absolute;
+    background-color: var(--primary-color);
+    width: 60%;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 5px 4px 10px 5px var(--default-shadow-color);
+    border-style: solid;
+    border-width: 4px;
+    padding: 4px 1em;
+    box-sizing: border-box;
+    align-items: flex-start;
+
+    transition: height 0.4s ease;
+}
+.task-box-small .task-box-info{
+    display: flex;
+}
+.task-box-very-small .task-box-info{
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+.task-box-small:hover{
+    height: 56px !important;
+}
+.task-box-small:hover .task-box-info{
+    display: block;
+}
+.task-box-very-small:hover .task-box-info{
+    opacity: 1;
+}
+
+.task-box-inputs{
+    position: relative;
+    flex: 1;
+    display: grid;
+    justify-content: end;
+    justify-items: center;
+}
+.task-box-inputs label{
+    display: block;
+    grid-column: 1;
+}
+.for-task-complete, [--data-task-complete]{
+    grid-row: 1;
+}
+.for-task-delete, [--data-task-delete]{
+    grid-row: 2;
+}
+[--data-task-complete], [--data-task-delete]{
+    display: block;
+    grid-column: 2;
+    cursor: pointer;
+}
+[--data-task-delete]{
+    transition: color 0.2s ease;
+}
+[--data-task-delete]:hover{
+    color: var(--accent-color);
+}
+[--data-task-complete]{
+    accent-color: var(--accent-color);
+    align-self: self-start;
+}
+
+.task-box-small .task-box-inputs{
+    display: block;
+    flex: 1;
+    text-align: right;
+}
+.task-box-small [--data-task-delete], .task-box-small [--data-task-complete], .task-box-small label{
+    display: inline;
+}
+.task-box-small:hover .task-box-inputs{
+    display: grid;
+}
+.task-box-very-small .task-box-inputs{
+    opacity: 0;
+    
+    transition: opacity 0.2s ease;
+    display: block;
+}
+.task-box-very-small:hover .task-box-inputs{
+    opacity: 1;
+    display: grid;
+}
+
+.task-box-end-adjuster{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 5px;
+    width: 100%;
+    cursor: s-resize;
+}
+@keyframes dynamic-pulse {
+    0% {
+        transform: scale(1, 1);
+    }
+
+    50% {
+        transform: scale(1.1, 1.1);
+    }
+
+    70% {
+        transform: scale(0.9, 0.9);
+    }
+
+    100% {
+        transform: scale(1, 1);
+    }
+}
+
+@keyframes right-fade-in {
+    0% {
+        transform: translateX(-50px);
+        opacity: 0;
+    }
+
+    75% {
+        transform: translateX(5px);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX((0));
+    }
+}
+
+@keyframes left-fade-in {
+    0% {
+        transform: translateX(50px);
+        opacity: 0;
+    }
+
+    75% {
+        transform: translateX(-5px);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX((0));
+    }
+}
+
+@keyframes task-inputs-anim {}

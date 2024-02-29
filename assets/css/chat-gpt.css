@@ -1,9 +1,12 @@
 body{
-    scroll-behavior: smooth;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
 }
 main{
     display: flex;
-    height: 100%;
+    flex: 1;
+    overflow-y: hidden;
 }
 main > .chatHistoryBar{
     background-color: #202123;
@@ -112,9 +115,6 @@ main > .chatContainer{
     overflow-x: hidden;
     position: relative;
 }
-.chatHistoryBar > .chatHistory::-webkit-scrollbar-track{
-    background-color: transparent;
-}
 .chatMessages{
     display: flex;
     flex-direction: column;
@@ -125,9 +125,6 @@ main > .chatContainer{
 }
 .chatMessages *{
     direction: ltr;
-}
-.chatMessages::-webkit-scrollbar-track{
-    background-color: transparent;
 }
 .chatSendMessageWrapper{
     min-height: 15%;

@@ -96,4 +96,3 @@
         // Catch and handle exceptions
         sendErrorResponse($e->getMessage(), 500);
     }
-?>

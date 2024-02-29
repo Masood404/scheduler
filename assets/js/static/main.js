@@ -7,6 +7,18 @@ function logout() {
 }
 
 /**
+ * This function sets the authorization header.
+ * Will result in an error if the authorization is not set in the storage so make sure to use the isLogged variable.
+ */
+function setAuthorizationHeader() {
+    $.ajaxSetup({
+        beforeSend: (xhr) => {
+            xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem("authToken"));
+        }
+    });
+};
+
+/**
  * Refresh the authorization token that is stored in localstorage.
  * @returns {Promise<void>} does not resolve in to anything just check for success or failure.
  */
@@ -20,12 +32,10 @@ async function refreshToken() {
             localStorage.removeItem("newAuthToken");
         }
         else {
+            setAuthorizationHeader();
             const response = await $.ajax({
                 type: "POST",
                 url: `${__project_url__}/api/users/refresh-token.php`,
-                beforeSend: (xhr) => {
-                    xhr.setRequestHeader("Authorization", `Bearer ${authToken}`);
-                }
             });
 
             localStorage.setItem("authToken", response.authToken);
@@ -40,10 +50,11 @@ async function refreshToken() {
     }
 }
 
+
 /**
  * Either if the authorization token is valid, which means if the user is logged.
  */
-let isLogged = false;
+let isLogged = true;
 
 refreshToken().then(() => {
     isLogged = true;

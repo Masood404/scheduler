@@ -6,6 +6,17 @@
     require_once realpath(__DIR__."/scripts/Users.php");
 
     /**
+     * Variable containing an http request's data.
+     * Equivalent to:
+     * <code>
+     * <?php
+     * file_get_contents("php://input")
+     * ?>
+     * </code>
+     */
+    $REQ = file_get_contents("php://input");
+
+    /**
      * Authorizes through HTTP Authorization header.
      * @return array The header authorization's token payload.
      */
