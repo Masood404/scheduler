@@ -38,7 +38,7 @@
         $styleCss = path_to_url(__CSS__) . '/style.css';
         $flatIcon = path_to_url(__NODE_MODULES__) . "/@flaticon/flaticon-uicons/css/all/all.css";
 
-        $project_url = __PROJECT_URL__;
+        $iconUrl = path_to_url(__IMAGES__).'/Scheduler_Logo.png';
 
         $jqueryJs = path_to_url(__JS__) . '/jquery.min.js';
         $mainJs = path_to_url(__JS__) . '/main.js';
@@ -52,6 +52,8 @@
 
             <script src="$jqueryJs"></script>
             <script src="$mainJs"></script>
+
+            <link rel="icon" href="$iconUrl" type="image/icon type">
 
         EOD;
 

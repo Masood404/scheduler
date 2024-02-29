@@ -6,6 +6,7 @@
 </head>
 <header>
     <div class="brandContainer">
+        <img src="<?php echo path_to_url(__IMAGES__).'/IT-Scheduler_Logo.png'; ?>" alt="">
         <h1>Scheduler</h1>
     </div>
     <div class="weatherBlock">

@@ -81,12 +81,19 @@ nav li{
     text-align: center;
     flex: 0.5;
 }
+.brandContainer{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    margin: 0 76px 0 38px;
+    flex: none;
+    width: min-content;
+}
 .brandContainer img{
-    filter: brightness(0) saturate(100%) invert(50%) sepia(81%) saturate(734%) hue-rotate(154deg) brightness(104%) contrast(106%);;
-    width: 60%;
+    width: 54px;
 }
 .brandContainer h1{
-    margin-left: 10px;
+    margin: 0;
 }
 .weatherBlock{
     flex: 1.5;
