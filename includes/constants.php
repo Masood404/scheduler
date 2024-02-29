@@ -78,11 +78,16 @@
     #endregion
 
     #region url paths
+    $hostname = file_get_contents(__DIR__.DIR_S.'http_host.txt');
+    $hostname = isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : $hostname;
+
+    // Store the hostname.
+    file_put_contents(__DIR__.DIR_S.'http_host.txt', $hostname);
 
     /**
      * The public root name of the server in the url or also known as host name, if your are in local development its probably 'localhost'
      */
-    define("HTTP_HOST", $_SERVER["SERVER_NAME"]);
+    define("HTTP_HOST", $hostname);
 
     $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
     $protocol = $isSecure ? "https://" : "http://";
