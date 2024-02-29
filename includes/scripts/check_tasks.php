@@ -17,7 +17,7 @@ $DBConn = DBConn::getInstance();
 $currentTime = (new DateTime("now"))->getTimestamp();
 
 #region Send a push notification to the user's subscription.
-// Query checks if the next task's startTime falls within one minute of the current time
+// Query checks if the next task's startTime falls within five minute of the current time
 $query = 
 <<<SQL
 SELECT 
@@ -45,6 +45,9 @@ foreach($result as $usersTask){
         ];
         $webPush = new WebPush($auth);
 
+        $url = __PROJECT_URL__;
+        $icon = path_to_url(__IMAGES__).'/Scheduler_Logo.png';
+
         //payload for push in json 
         $payload = json_encode([
             "title" => "Scheduler",
@@ -53,8 +56,8 @@ foreach($result as $usersTask){
                 "startTime" => $usersTask["startTime"],
                 "endTime" => $usersTask["endTime"]
             ],
-            "url" => "http://localhost/scheduler/",
-            "icon" => "http://localhost/scheduler/assets/images/Gpt Icon.png"
+            "url" => "$url",
+            "icon" => "$icon"
         ]);
 
         // Get the subscription.
