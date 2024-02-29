@@ -10,11 +10,11 @@
      */
     class Task{
         private string $username;
-        private ?int $id;
-        private string $title;
-        private int $startTime;   
-        private int $endTime;
-        private bool $completed;
+        public ?int $id;
+        public string $title;
+        public int $startTime;   
+        public int $endTime;
+        public bool $completed;
 
         /**
          * Create a task object.
@@ -74,6 +74,27 @@
             // Include the object's id in the insert query if its not null.
             $DBConn->executeQuery($query, [$this->username, $this->id, $this->title, $this->startTime, $this->endTime, $this->completed]);
         }   
+        /**
+         * Updates the completed stats of the task in the database.
+         * @param bool $completed Represents the completed status of the task, by default it is true.
+         */
+        public function complete(bool $completed = true){
+            $DBConn = DBConn::getInstance();
+
+            // Query to update the task status.
+            $query = 
+            <<<SQL
+            UPDATE tasks SET completed = ?
+            WHERE id = ?;
+            SQL;
+
+            try{
+                $DBConn->executeQuery($query, [$completed, $this->id]);
+            }
+            catch(Exception $e){
+                throw new Exception('Failed updating the status of a task whilte executing query: '.$e->getMessage());
+            }
+        }
         /**
          * Get the current task object in associative array.
          */   
@@ -218,5 +239,3 @@
             parent::__construct($message, $code, $previous);
         }
     };
-
-?>
