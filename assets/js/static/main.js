@@ -32,12 +32,10 @@ async function refreshToken() {
             localStorage.removeItem("newAuthToken");
         }
         else {
+            setAuthorizationHeader();
             const response = await $.ajax({
                 type: "POST",
                 url: `${__project_url__}/api/users/refresh-token.php`,
-                beforeSend: (xhr) => {
-                    xhr.setRequestHeader("Authorization", `Bearer ${authToken}`);
-                }
             });
 
             localStorage.setItem("authToken", response.authToken);
@@ -52,10 +50,11 @@ async function refreshToken() {
     }
 }
 
+
 /**
  * Either if the authorization token is valid, which means if the user is logged.
  */
-let isLogged = false;
+let isLogged = true;
 
 refreshToken().then(() => {
     isLogged = true;
