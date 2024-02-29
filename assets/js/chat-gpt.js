@@ -21,14 +21,6 @@ const ChatsInterface = () => {
         throw "User is not authorized";
     }
 
-    const setAuthorizationHeader = () => {
-        $.ajaxSetup({
-            beforeSend: (xhr) => {
-                xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem("authToken"));
-            }
-        });
-    };
-
     const prompt = async (prompt, chatId = null) => {
         try {
             setAuthorizationHeader();
